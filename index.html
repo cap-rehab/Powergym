@@ -1293,6 +1293,9 @@
 
     <audio id="beep-daily" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
     <audio id="beep-activation" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
+    <audio id="beep-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-84.wav" preload="auto"></audio>
+    <audio id="beep-delete" src="https://assets.mixkit.co/active_storage/sfx/2572/2572-84.wav" preload="auto"></audio>
+    <audio id="beep-error" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-84.wav" preload="auto"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1413,6 +1416,29 @@
         };
 
         let html5QrScannerInstance = null;
+        
+        // نظام التوقيت الآمن للباركود (Cooldown)
+        let lastScanTimestamp = 0;
+        const SCAN_COOLDOWN_MS = 3000; // 3 ثواني للانتظار بين كل مسح لتجنب التكرار
+
+        // دالة تشغيل الأصوات المركزية
+        function playAppSound(soundId) {
+            const audio = document.getElementById(soundId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log('Audio play error:', e));
+            }
+        }
+
+        // دالة التحقق من التوقيت لتفادي الضربات المزدوجة
+        function canProcessScan() {
+            const now = Date.now();
+            if (now - lastScanTimestamp < SCAN_COOLDOWN_MS) {
+                return false;
+            }
+            lastScanTimestamp = now;
+            return true;
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedState = localStorage.getItem('POWER_GYM_CORE_DATA');
@@ -1687,6 +1713,7 @@
                 });
             }
 
+            playAppSound('beep-success'); // تفعيل الإشعار الصوتي لحفظ العضوية الجديدة أو المحدثة
             closeModal('member-modal');
             refreshSystemCore();
         }
@@ -1694,6 +1721,7 @@
         function deleteMemberByCode(code) {
             if (confirm(`هل أنت متأكد من حذف المشترك صاحب الكود [${code}] نهائياً؟`)) {
                 gymState.members = gymState.members.filter(x => x.code != code);
+                playAppSound('beep-delete'); // تنبيه صوتي عند الحذف
                 refreshSystemCore();
             }
         }
@@ -1815,6 +1843,12 @@
         }
 
         function registerAttendanceDirectly() {
+            // التحقق من التوقيت للحد من الضربات السريعة والمزدوجة
+            if (!canProcessScan()) {
+                console.warn("تجاهل الإدخال: نظام حماية الضربات المزدوجة نشط (Cooldown)");
+                return;
+            }
+
             const codeInput = prompt("الرجاء إدخال رقم كود المشترك التعريفي بدقة لتحضيره فورياً بالدفتر الذكي:");
             if(!codeInput) return;
 
@@ -1824,7 +1858,11 @@
                 handleMonthlySubscriptionActivation(memberId);
             } else {
                 const memberCode = parseInt(scannedValue, 10);
-                if(isNaN(memberCode)) { alert("الكود المدخل غير صحيح!"); return; }
+                if(isNaN(memberCode)) { 
+                    playAppSound('beep-error');
+                    alert("الكود المدخل غير صحيح!"); 
+                    return; 
+                }
                 processAttendanceVerification(memberCode);
             }
         }
@@ -1832,6 +1870,7 @@
         function handleMonthlySubscriptionActivation(memberId) {
             const member = gymState.members.find(m => String(m.code) === String(memberId));
             if (!member) {
+                playAppSound('beep-error');
                 alert("⚠️ خطأ: كود التفعيل الممسوح غير تابع لأي مشتركة حالية!");
                 return;
             }
@@ -1845,6 +1884,7 @@
                 const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
                 if (daysDiff < 25) {
+                    playAppSound('beep-error'); // تنبيه تحذيري بتكرار عملية دفع وتفعيل مبكرة
                     alert(`🚫 حماية الاشتراك:\nالمشتركة [ ${member.name} ] قامت بتفعيل اشتراكها الشهري بالفعل لهذه الدورة بتاريخ: ${member.lastActivationDate}.\nلا يمكن إعادة استخدام كود التفعيل الشهري (PG) حالياً وتكرار الإيراد المالي.`);
                     return;
                 }
@@ -1862,8 +1902,7 @@
                 type: 'إيراد'
             });
 
-            const audioAct = document.getElementById('beep-activation');
-            if (audioAct) { audioAct.currentTime = 0; audioAct.play().catch(e => console.log(e)); }
+            playAppSound('beep-activation'); // تشغيل تنبيه التفعيل الصوتي اللحظي
 
             alert(`🎉 تم تفعيل الاشتراك بنجاح للمشتركة: ${member.name}\nالصلاحية الجديدة حتى: ${member.endDate}\n💰 تم ترحيل مبلغ ${member.price} ج.م للخزينة.`);
             
@@ -1876,6 +1915,7 @@
             const timeStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
             if (!m) {
+                playAppSound('beep-error');
                 alert(`⚠️ تنبيه حرج: لا يوجد أي عضو مسجل بالنظام يحمل الكود رقم [ ${memberCode} ]!`);
                 return;
             }
@@ -1883,6 +1923,7 @@
             // ميزة منع تكرار الحضور اليومي
             const alreadyAttended = gymState.attendance.some(a => String(a.memberCode) === String(memberCode) && a.date === todayStr);
             if (alreadyAttended) {
+                playAppSound('beep-error'); // تنبيه صوتي بأنها مسجلة من قبل
                 const confirmAgain = confirm(`الكابتن [ ${m.name} ] مسجلة حضور اليوم بالفعل في الدفاتر! هل أنت متأكد من رغبتك في تسجيل حضورها مرة ثانية؟`);
                 if (!confirmAgain) {
                     return; 
@@ -1902,14 +1943,13 @@
                 status: statusLabelText
             });
 
-            const audioDaily = document.getElementById('beep-daily');
-            if (audioDaily) { audioDaily.currentTime = 0; audioDaily.play().catch(e => console.log(e)); }
-
             const feedbackBox = document.getElementById('scan-feedback-message');
             if (isExpired) {
+                playAppSound('beep-error'); // تنبيه تحذيري لانتهاء العقد
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--danger-red)">❌ تم التحضير! عضو منتهي العقد: ${m.name}</span>`;
                 alert(`🚨 تحذير للكابتن: المشترك ${m.name} حضر الآن ولكن اشتراكه منتهي الصلاحية! يرجى مسح كارت الـ PG للتجديد.`);
             } else {
+                playAppSound('beep-daily'); // تشغيل تنبيه الحضور الناجح النظيف
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--success-green)">✅ تم رصد الحضور بنجاح للمشترك: ${m.name}</span>`;
             }
 
@@ -1963,6 +2003,7 @@
         function deleteSingleAttendance(index) {
             if (confirm('هل تريدين بالتأكيد حذف وإلغاء قيد الحضور هذا من سجلات اليوم؟')) {
                 gymState.attendance.splice(index, 1);
+                playAppSound('beep-delete'); // تنبيه لحذف قيد حضور
                 refreshSystemCore();
             }
         }
@@ -1970,6 +2011,7 @@
         function clearAllAttendance() {
             if (confirm('🚨 تحذير: هل أنت متأكد من تصفير ومسح سجل الحضور بالكامل؟ لا يمكن التراجع عن هذا!')) {
                 gymState.attendance = [];
+                playAppSound('beep-delete'); // تنبيه بالحذف الشامل
                 refreshSystemCore();
             }
         }
@@ -1991,6 +2033,11 @@
                 { facingMode: "environment" },
                 { fps: 15, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
+                    // تطبيق حماية الـ Cooldown على الكاميرا لمنع تكرار مسح الباركود بسرعة
+                    if (!canProcessScan()) {
+                        return; 
+                    }
+
                     const scannedValue = decodedText.trim();
                     if (scannedValue.toUpperCase().startsWith("PG-")) {
                         const memberId = scannedValue.replace(/PG-/i, "");
@@ -2045,7 +2092,11 @@
             const desc = document.getElementById('f-desc').value;
             const dateStr = new Date().toISOString().split('T')[0];
 
-            if(!amount || !desc) { alert('الرجاء إدخال القيمة المالية والبيان لتأكيد السند المالي!'); return; }
+            if(!amount || !desc) { 
+                playAppSound('beep-error');
+                alert('الرجاء إدخال القيمة المالية والبيان لتأكيد السند المالي!'); 
+                return; 
+            }
 
             gymState.transactions.push({
                 date: dateStr,
@@ -2053,6 +2104,7 @@
                 type: typeKey === 'income' ? 'إيراد' : 'مصروف'
             });
 
+            playAppSound('beep-success'); // إشعار صوتي عند اعتماد أي قيد مالي بنجاح بالخزينة
             closeModal('finance-modal');
             refreshSystemCore();
         }
@@ -2060,6 +2112,7 @@
         function deleteTransaction(index) {
             if(confirm('هل تريد بالتأكيد حذف هذا القيد المالي نهائياً؟')) {
                 gymState.transactions.splice(index, 1);
+                playAppSound('beep-delete'); // تنبيه عند حذف السند المالي
                 refreshSystemCore();
             }
         }
