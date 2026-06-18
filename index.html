@@ -818,12 +818,12 @@
             
             <div class="form-group">
                 <label>اسم مستخدم النظام</label>
-                <input type="text" id="username-field" class="input-control" placeholder="ادخل اسم الحساب (username)">
+                <input type="text" id="username-field" class="input-control" placeholder="ادخل اسم الحساب (rehab)">
             </div>
             
             <div class="form-group">
                 <label>كلمة المرور السرية</label>
-                <input type="password" id="password-field" class="input-control" placeholder="•••••••• (password)">
+                <input type="password" id="password-field" class="input-control" placeholder="•••••••• (123456)">
             </div>
 
             <button class="btn-login" onclick="attemptLogin()">تسجيل الدخول للنظام</button>
@@ -1297,7 +1297,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // تحديث استيراد الدوال ليشمل signOut
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1371,7 +1370,7 @@
             }
         };
 
-        // المزامنة اللحظية (الاستماع لتحديثات الأجهزة الأخرى) بشرط وجود مستخدم مسجل
+        // المزامنة اللحظية (الاستماع لتحديثات الأجهزة الأخرى)
         onSnapshot(gymDocRef, (docSnap) => {
             if (auth.currentUser && docSnap.exists()) {
                 if (docSnap.metadata.hasPendingWrites) {
@@ -1405,7 +1404,8 @@
     </script>
 
     <script>
-        let gymState = {
+        // الحل الجذري: تحويل تعريف الـ Local Scope إلى Global Scope ليتزامن فوراً مع السحابة (Firebase)
+        var gymState = {
             config: { nextCode: 1001, theme: 'light' },
             members: [],
             attendance: [],
@@ -2120,4 +2120,3 @@
     </script>
 </body>
 </html>
-
