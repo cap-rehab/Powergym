@@ -34,6 +34,7 @@
             --radius-md: 12px;
             --radius-lg: 16px;
             --neon-glow: none;
+            --whatsapp-green: #25D366;
         }
 
         [data-theme="cyberpunk"] {
@@ -55,6 +56,7 @@
             --radius-md: 8px;
             --radius-lg: 12px;
             --neon-glow: 0 0 10px var(--primary-blue);
+            --whatsapp-green: #1ebd5a;
         }
 
         * {
@@ -484,6 +486,8 @@
         .btn-success { background-color: var(--success-green); color: #fff; }
         .btn-danger { background-color: var(--danger-red); color: #fff; }
         .btn-info { background-color: #0ea5e9; color: #fff; }
+        .btn-whatsapp { background-color: var(--whatsapp-green); color: #fff; }
+        .btn-whatsapp:hover { opacity: 0.9; }
 
         /* الكاميرا وقارئ الـ QR */
         #scanner-viewport {
@@ -1011,7 +1015,7 @@
                                 <tr>
                                     <th>كود العضو</th>
                                     <th>الاسم الكامل</th>
-                                    <th>رقم الهاتف</th>
+                                    <th>رقم الهاتف / الواتس</th>
                                     <th>الحالة الصحية</th>
                                     <th>نوع العضوية / الباقة</th>
                                     <th>الاشتراك الفعلي والمدة</th>
@@ -1140,7 +1144,7 @@
                 
                 <div class="grid-2">
                     <div class="form-group">
-                        <label>رقم الهاتف النقال الجوال *</label>
+                        <label>رقم هاتف الواتساب الجوال *</label>
                         <input type="tel" id="m-phone" class="input-control" placeholder="01xxxxxxxxx">
                     </div>
                     <div class="form-group">
@@ -1159,19 +1163,33 @@
 
                 <div class="grid-2">
                     <div class="form-group">
-                        <label>المبلغ المالي المدفوع المحصل (ج.م) *</label>
+                        <label>تطبيق كود خصم / نسبة (اختياري) 🎁</label>
+                        <select id="m-discount" class="input-control" onchange="autoFillPriceAndExpiry()">
+                            <option value="0">بدون خصم (0%)</option>
+                            <option value="10">خصم 10%</option>
+                            <option value="15">خصم 15%</option>
+                            <option value="20">خصم 20%</option>
+                            <option value="25">خصم 25%</option>
+                            <option value="30">خصم 30%</option>
+                            <option value="50">خصم نصف السعر (50%)</option>
+                            <option value="100">منحة مجانية (100%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>المبلغ المدفوع النهائي بعد الخصم (ج.م) *</label>
                         <input type="number" id="m-price" class="input-control" placeholder="0.00">
                     </div>
+                </div>
+
+                <div class="grid-2">
                     <div class="form-group">
                         <label>تاريخ بدء وصلاحية العقد اليوم *</label>
                         <input type="date" id="m-start-date" class="input-control" onchange="autoFillPriceAndExpiry()">
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>تاريخ نهاية وانتهاء الاشتراك المعتمد أوتوماتيكياً</label>
-                    <input type="date" id="m-end-date" class="input-control">
-                    <small style="color: var(--text-muted); font-size: 11px;">يقوم النظام بحساب تاريخ النهاية تلقائياً بناءً على نوع الباقة المختارة، وتستطيع تعديله يدوياً.</small>
+                    <div class="form-group">
+                        <label>تاريخ النهاية أوتوماتيكياً</label>
+                        <input type="date" id="m-end-date" class="input-control">
+                    </div>
                 </div>
 
                 <div class="grid-2" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px;">
@@ -1212,6 +1230,8 @@
                 <button class="modal-close" onclick="closeModal('qr-card-modal')">&times;</button>
             </div>
             <div class="modal-body" id="print-area-target">
+                <input type="hidden" id="current-qr-member-code" value="">
+
                 <div style="text-align: center; margin-bottom: 15px; font-weight: bold; color: var(--dark-blue);">
                     الاسم: <span id="header-print-name"></span> | الكود: <span id="header-print-code"></span>
                 </div>
@@ -1255,11 +1275,12 @@
                 </div>
                 
                 <p class="no-print" style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:15px;">
-                    قم بقص الكارتين وتغليفهما. الكارت العادي مع المشترك للدخول اليومي، وكارت التفعيل يُحتفظ به للإدارة لتجديد الاشتراك.
+                    قم بقص الكارتين وتغليفهما أو إرسالهما للمشترك عبر الواتساب.
                 </p>
             </div>
             <div class="modal-footer class-no-print">
                 <button class="btn btn-secondary no-print" onclick="closeModal('qr-card-modal')">إغلاق</button>
+                <button class="btn btn-whatsapp no-print" onclick="sendCardViaWhatsApp()">📲 إرسال للواتساب</button>
                 <button class="btn btn-success no-print" onclick="printSmartCard()">🖨️ طباعة الكروت</button>
             </div>
         </div>
@@ -1320,11 +1341,9 @@
         // نظام التحقق اللحظي وحماية التوجيه البرمجي والسحابي
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // الكابتن مسجل دخوله بنجاح سحابياً -> أظهر التطبيق وأخفِ شاشة اللوجين
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
                 
-                // تحميل البيانات فور نجاح المصادقة
                 getDoc(gymDocRef).then((docSnap) => {
                     if (docSnap.exists()) {
                         const cloudData = docSnap.data().gymState;
@@ -1337,16 +1356,13 @@
                     console.error("خطأ في تحميل البيانات السحابية:", error);
                 });
             } else {
-                // غير مسجل أو سجل خروج -> احظر واجهة التطبيق تماماً واعرض واجهة الدخول
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
-                // تصفير حقول تسجيل الدخول
                 document.getElementById('username-field').value = '';
                 document.getElementById('password-field').value = '';
             }
         });
 
-        // دالة تسجيل الدخول
         window.firebaseLogin = function(username, password) {
             const email = username.includes('@') ? username : `${username}@powergym.com`;
             signInWithEmailAndPassword(auth, email, password)
@@ -1360,12 +1376,10 @@
                 });
         };
 
-        // دالة تسجيل الخروج الجديدة
         window.firebaseLogout = function() {
             if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟")) {
                 signOut(auth).then(() => {
                     console.log("تم تسجيل الخروج بنجاح");
-                    // سيقوم onAuthStateChanged بإخفاء التطبيق تلقائياً
                 }).catch((error) => {
                     console.error("خطأ في تسجيل الخروج:", error);
                     alert("حدث خطأ أثناء محاولة تسجيل الخروج.");
@@ -1373,7 +1387,6 @@
             }
         };
 
-        // المزامنة اللحظية (الاستماع لتحديثات الأجهزة الأخرى)
         onSnapshot(gymDocRef, (docSnap) => {
             if (auth.currentUser && docSnap.exists()) {
                 if (docSnap.metadata.hasPendingWrites) {
@@ -1387,9 +1400,8 @@
             }
         });
 
-        // تصدير دالة الحفظ السحابي لتستخدمها الدوال الأساسية
         window.syncToCloud = function() {
-            if (!auth.currentUser) return; // حظر الرفع إذا انتهت الجلسة أو سجل خروجه
+            if (!auth.currentUser) return; 
             const statusNode = document.getElementById('sync-status');
             if (statusNode) {
                 statusNode.innerHTML = `<span>⏳ جاري الرفع السحابي...</span>`;
@@ -1407,7 +1419,6 @@
     </script>
 
     <script>
-        // الحل الجذري: تحويل تعريف الـ Local Scope إلى Global Scope ليتزامن فوراً مع السحابة (Firebase)
         var gymState = {
             config: { nextCode: 1001, theme: 'light' },
             members: [],
@@ -1416,12 +1427,9 @@
         };
 
         let html5QrScannerInstance = null;
-        
-        // نظام التوقيت الآمن للباركود (Cooldown)
         let lastScanTimestamp = 0;
-        const SCAN_COOLDOWN_MS = 3000; // 3 ثواني للانتظار بين كل مسح لتجنب التكرار
+        const SCAN_COOLDOWN_MS = 3000; 
 
-        // دالة تشغيل الأصوات المركزية
         function playAppSound(soundId) {
             const audio = document.getElementById(soundId);
             if (audio) {
@@ -1430,7 +1438,6 @@
             }
         }
 
-        // دالة التحقق من التوقيت لتفادي الضربات المزدوجة
         function canProcessScan() {
             const now = Date.now();
             if (now - lastScanTimestamp < SCAN_COOLDOWN_MS) {
@@ -1467,10 +1474,8 @@
                 }
             });
 
-            // الحفظ التلقائي المحلي كل 1.5 ثانية
             setInterval(() => {
                 localStorage.setItem('POWER_GYM_CORE_DATA', JSON.stringify(gymState));
-                
                 const dot = document.getElementById('save-dot');
                 if(dot) {
                     dot.classList.add('saving');
@@ -1485,11 +1490,9 @@
 
             if (!user || !pass) return;
 
-            // توجيه معطيات تسجيل الدخول للمحرك المحمي المشفر بـ Firebase
             if (window.firebaseLogin) {
                 window.firebaseLogin(user, pass);
             } else {
-                // الكود الاحتياطي المؤقت في حال انقطاع الشبكة تماماً قبل تحميل الموديل السحابي
                 if (user.toLowerCase() === 'rehab' && pass === '123456') {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('app-container').style.display = 'flex';
@@ -1502,7 +1505,6 @@
             }
         }
 
-        // دالة الحفظ المركزية، تقوم بالحفظ المحلي ثم الاستدعاء السحابي
         function persistCoreState(skipCloudSync = false) {
             localStorage.setItem('POWER_GYM_CORE_DATA', JSON.stringify(gymState));
             if (!skipCloudSync && window.syncToCloud) {
@@ -1621,6 +1623,7 @@
                 document.getElementById('m-phone').value = m.phone;
                 document.getElementById('m-plan').value = m.plan;
                 document.getElementById('m-price').value = m.price;
+                document.getElementById('m-discount').value = m.discount || '0';
                 document.getElementById('m-start-date').value = m.startDate;
                 document.getElementById('m-end-date').value = m.endDate;
                 
@@ -1633,6 +1636,7 @@
                 document.getElementById('m-phone').value = "";
                 document.getElementById('m-plan').value = "";
                 document.getElementById('m-price').value = "";
+                document.getElementById('m-discount').value = "0";
                 document.getElementById('m-start-date').value = new Date().toISOString().split('T')[0];
                 document.getElementById('m-end-date').value = "";
                 
@@ -1647,15 +1651,18 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
+        // الدالة المحدثة لحساب السعر بناءً على نسبة الخصم والتعديل الجديد
         function autoFillPriceAndExpiry() {
             const plan = document.getElementById('m-plan').value;
             const startVal = document.getElementById('m-start-date').value;
+            const discountPercent = parseFloat(document.getElementById('m-discount').value) || 0;
+            
             if(!startVal) return;
 
             let basePrice = 0; let addedMonths = 0; let addedDays = 0;
 
             switch(plan) {
-                case 'اشتراك شهري عادي': basePrice = 300; addedMonths = 1; break;
+                case 'اشتراك شهري عادي': basePrice = 200; addedMonths = 1; break; // تم التعديل إلى 200 بدلاً من 300
                 case 'اشتراك ربع سنوي': basePrice = 800; addedMonths = 3; break;
                 case 'اشتراك نصف سنوي': basePrice = 1500; addedMonths = 6; break;
                 case 'اشتراك سنوي كامل': basePrice = 2500; addedMonths = 12; break;
@@ -1663,7 +1670,11 @@
                 case 'باقة خاصة VIP VIP': basePrice = 600; addedMonths = 1; break;
             }
 
-            if(basePrice > 0) document.getElementById('m-price').value = basePrice;
+            // تطبيق الخصم وإدراجه في حقل السعر النهائي تلقائياً
+            if(basePrice > 0) {
+                let finalPrice = basePrice - (basePrice * (discountPercent / 100));
+                document.getElementById('m-price').value = finalPrice;
+            }
 
             let startDateObj = new Date(startVal);
             if(addedMonths > 0) startDateObj.setMonth(startDateObj.getMonth() + addedMonths);
@@ -1677,6 +1688,7 @@
             const phone = document.getElementById('m-phone').value.trim();
             const plan = document.getElementById('m-plan').value;
             const price = parseFloat(document.getElementById('m-price').value);
+            const discount = document.getElementById('m-discount').value;
             const startDate = document.getElementById('m-start-date').value;
             const endDate = document.getElementById('m-end-date').value;
             const healthStatus = document.getElementById('m-health-status').value;
@@ -1695,25 +1707,34 @@
                     gymState.members[idx].phone = phone;
                     gymState.members[idx].plan = plan;
                     gymState.members[idx].price = price;
+                    gymState.members[idx].discount = discount;
                     gymState.members[idx].startDate = startDate;
                     gymState.members[idx].endDate = endDate;
                     gymState.members[idx].healthStatus = healthStatus;
                     gymState.members[idx].healthNotes = healthNotes;
+
+                    // تحديث السجل المالي المرتبط بهذا المشترك تلقائياً
+                    let txIndex = gymState.transactions.findIndex(t => t.desc.includes(`(كود: ${editCode})`));
+                    if(txIndex !== -1) {
+                        gymState.transactions[txIndex].amount = price;
+                        gymState.transactions[txIndex].desc = `اشتراك العضو: ${name} (كود: ${editCode}) - باقة: ${plan}` + (discount > 0 ? ` (شامل خصم ${discount}%)` : ``);
+                        gymState.transactions[txIndex].date = startDate;
+                    }
                 }
             } else {
                 const newCode = gymState.config.nextCode++;
                 gymState.members.push({
-                    code: newCode, name, phone, plan, price, startDate, endDate, healthStatus, healthNotes
+                    code: newCode, name, phone, plan, price, discount, startDate, endDate, healthStatus, healthNotes
                 });
 
                 gymState.transactions.push({
                     date: startDate, type: 'إيراد',
-                    desc: `اشتراك العضو الجديد: ${name} (كود: ${newCode}) - باقة: ${plan}`,
+                    desc: `اشتراك العضو: ${name} (كود: ${newCode}) - باقة: ${plan}` + (discount > 0 ? ` (شامل خصم ${discount}%)` : ``),
                     amount: price
                 });
             }
 
-            playAppSound('beep-success'); // تفعيل الإشعار الصوتي لحفظ العضوية الجديدة أو المحدثة
+            playAppSound('beep-success'); 
             closeModal('member-modal');
             refreshSystemCore();
         }
@@ -1721,7 +1742,7 @@
         function deleteMemberByCode(code) {
             if (confirm(`هل أنت متأكد من حذف المشترك صاحب الكود [${code}] نهائياً؟`)) {
                 gymState.members = gymState.members.filter(x => x.code != code);
-                playAppSound('beep-delete'); // تنبيه صوتي عند الحذف
+                playAppSound('beep-delete'); 
                 refreshSystemCore();
             }
         }
@@ -1743,7 +1764,7 @@
                     tr.innerHTML = `
                         <td style="font-weight:bold; font-family:monospace; color:var(--primary-blue); font-size:15px;">${m.code}</td>
                         <td style="font-weight:700;">${m.name}</td>
-                        <td>${m.phone}</td>
+                        <td><a href="https://wa.me/${m.phone.replace(/\D/g, '').startsWith('0') ? '2' + m.phone.replace(/\D/g, '') : m.phone.replace(/\D/g, '')}" target="_blank" style="color: var(--whatsapp-green); text-decoration:none;">${m.phone} 💬</a></td>
                         <td><span class="badge ${m.healthStatus === 'بصحة جيدة' ? 'badge-success' : 'badge-danger'}">${m.healthStatus}</span></td>
                         <td><span class="badge badge-info">${m.plan}</span></td>
                         <td>${m.startDate}</td>
@@ -1776,6 +1797,9 @@
         function openQrCard(memberCode) {
             const m = gymState.members.find(x => x.code == memberCode);
             if(!m) return;
+
+            // حفظ كود المشترك للواتساب
+            document.getElementById('current-qr-member-code').value = m.code;
 
             const todayStr = new Date().toISOString().split('T')[0];
             const isExpired = m.endDate < todayStr;
@@ -1818,6 +1842,32 @@
             document.getElementById('qr-card-modal').classList.add('active');
         }
 
+        // الدالة الجديدة المخصصة لإرسال كارت المشترك الذكي عبر الواتساب
+        function sendCardViaWhatsApp() {
+            const memberCode = document.getElementById('current-qr-member-code').value;
+            const m = gymState.members.find(x => x.code == memberCode);
+            if(!m) return;
+
+            // تنسيق رقم الهاتف ليناسب كود الدولة (مصر +20)
+            let phoneStr = m.phone.replace(/\D/g, ''); 
+            if (phoneStr.startsWith('0')) {
+                phoneStr = '20' + phoneStr.substring(1);
+            } else if (!phoneStr.startsWith('20')) {
+                phoneStr = '20' + phoneStr;
+            }
+
+            // توليد روابط ديناميكية للصور (الباركود) للواتساب
+            const qrDailyUrl = `https://quickchart.io/qr?text=${m.code}&size=250&dark=0f172a`;
+            const qrActivationUrl = `https://quickchart.io/qr?text=PG-${m.code}&size=250&dark=ff3333`;
+
+            // صياغة نص الرسالة
+            const message = `أهلاً بك كابتن [ ${m.name} ] في صالة Power Gym ⚡\n\nتم تسجيل اشتراكك واصدار كروتك بنجاح 🥳\nنوع الباقة: ${m.plan}\nالكود الخاص بك: ${m.code}\nتاريخ النهاية: ${m.endDate}\n\n1️⃣ للدخول اليومي للصالة، استخدمي باركود الحضور من هنا:\n${qrDailyUrl}\n\n2️⃣ كود تفعيل الاشتراك الخاص بك للإدارة:\n${qrActivationUrl}\n\nنتمنى لكِ تمريناً ممتعاً! 💪`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${phoneStr}?text=${encodedMessage}`;
+            window.open(waUrl, '_blank');
+        }
+
         function printSmartCard() {
             document.body.classList.add('print-card-mode');
             window.print();
@@ -1843,7 +1893,6 @@
         }
 
         function registerAttendanceDirectly() {
-            // التحقق من التوقيت للحد من الضربات السريعة والمزدوجة
             if (!canProcessScan()) {
                 console.warn("تجاهل الإدخال: نظام حماية الضربات المزدوجة نشط (Cooldown)");
                 return;
@@ -1884,7 +1933,7 @@
                 const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
                 if (daysDiff < 25) {
-                    playAppSound('beep-error'); // تنبيه تحذيري بتكرار عملية دفع وتفعيل مبكرة
+                    playAppSound('beep-error'); 
                     alert(`🚫 حماية الاشتراك:\nالمشتركة [ ${member.name} ] قامت بتفعيل اشتراكها الشهري بالفعل لهذه الدورة بتاريخ: ${member.lastActivationDate}.\nلا يمكن إعادة استخدام كود التفعيل الشهري (PG) حالياً وتكرار الإيراد المالي.`);
                     return;
                 }
@@ -1902,7 +1951,7 @@
                 type: 'إيراد'
             });
 
-            playAppSound('beep-activation'); // تشغيل تنبيه التفعيل الصوتي اللحظي
+            playAppSound('beep-activation'); 
 
             alert(`🎉 تم تفعيل الاشتراك بنجاح للمشتركة: ${member.name}\nالصلاحية الجديدة حتى: ${member.endDate}\n💰 تم ترحيل مبلغ ${member.price} ج.م للخزينة.`);
             
@@ -1920,10 +1969,9 @@
                 return;
             }
 
-            // ميزة منع تكرار الحضور اليومي
             const alreadyAttended = gymState.attendance.some(a => String(a.memberCode) === String(memberCode) && a.date === todayStr);
             if (alreadyAttended) {
-                playAppSound('beep-error'); // تنبيه صوتي بأنها مسجلة من قبل
+                playAppSound('beep-error'); 
                 const confirmAgain = confirm(`الكابتن [ ${m.name} ] مسجلة حضور اليوم بالفعل في الدفاتر! هل أنت متأكد من رغبتك في تسجيل حضورها مرة ثانية؟`);
                 if (!confirmAgain) {
                     return; 
@@ -1945,11 +1993,11 @@
 
             const feedbackBox = document.getElementById('scan-feedback-message');
             if (isExpired) {
-                playAppSound('beep-error'); // تنبيه تحذيري لانتهاء العقد
+                playAppSound('beep-error'); 
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--danger-red)">❌ تم التحضير! عضو منتهي العقد: ${m.name}</span>`;
                 alert(`🚨 تحذير للكابتن: المشترك ${m.name} حضر الآن ولكن اشتراكه منتهي الصلاحية! يرجى مسح كارت الـ PG للتجديد.`);
             } else {
-                playAppSound('beep-daily'); // تشغيل تنبيه الحضور الناجح النظيف
+                playAppSound('beep-daily'); 
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--success-green)">✅ تم رصد الحضور بنجاح للمشترك: ${m.name}</span>`;
             }
 
@@ -2003,7 +2051,7 @@
         function deleteSingleAttendance(index) {
             if (confirm('هل تريدين بالتأكيد حذف وإلغاء قيد الحضور هذا من سجلات اليوم؟')) {
                 gymState.attendance.splice(index, 1);
-                playAppSound('beep-delete'); // تنبيه لحذف قيد حضور
+                playAppSound('beep-delete'); 
                 refreshSystemCore();
             }
         }
@@ -2011,7 +2059,7 @@
         function clearAllAttendance() {
             if (confirm('🚨 تحذير: هل أنت متأكد من تصفير ومسح سجل الحضور بالكامل؟ لا يمكن التراجع عن هذا!')) {
                 gymState.attendance = [];
-                playAppSound('beep-delete'); // تنبيه بالحذف الشامل
+                playAppSound('beep-delete'); 
                 refreshSystemCore();
             }
         }
@@ -2033,7 +2081,6 @@
                 { facingMode: "environment" },
                 { fps: 15, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
-                    // تطبيق حماية الـ Cooldown على الكاميرا لمنع تكرار مسح الباركود بسرعة
                     if (!canProcessScan()) {
                         return; 
                     }
@@ -2104,7 +2151,7 @@
                 type: typeKey === 'income' ? 'إيراد' : 'مصروف'
             });
 
-            playAppSound('beep-success'); // إشعار صوتي عند اعتماد أي قيد مالي بنجاح بالخزينة
+            playAppSound('beep-success'); 
             closeModal('finance-modal');
             refreshSystemCore();
         }
@@ -2112,7 +2159,7 @@
         function deleteTransaction(index) {
             if(confirm('هل تريد بالتأكيد حذف هذا القيد المالي نهائياً؟')) {
                 gymState.transactions.splice(index, 1);
-                playAppSound('beep-delete'); // تنبيه عند حذف السند المالي
+                playAppSound('beep-delete'); 
                 refreshSystemCore();
             }
         }
