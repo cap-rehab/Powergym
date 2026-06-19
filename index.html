@@ -75,6 +75,27 @@
             flex-direction: column;
         }
 
+        /* --- تأثير الفلاش الضوئي للنجاح والخطأ (إضافة جديدة) --- */
+        @keyframes flashSuccess { 0% { box-shadow: inset 0 0 150px rgba(34, 197, 94, 0.5); } 100% { box-shadow: inset 0 0 0 transparent; } }
+        @keyframes flashError { 0% { box-shadow: inset 0 0 150px rgba(239, 68, 68, 0.5); } 100% { box-shadow: inset 0 0 0 transparent; } }
+        .screen-flash-success { animation: flashSuccess 0.6s ease-out; }
+        .screen-flash-error { animation: flashError 0.6s ease-out; }
+
+        /* --- شاشة الكأس المنبثقة للنجاح (Trophy - إضافة جديدة) --- */
+        .trophy-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .trophy-overlay.show { opacity: 1; visibility: visible; }
+        .trophy-content { text-align: center; transform: scale(0.5); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .trophy-overlay.show .trophy-content { transform: scale(1); }
+        .trophy-icon { font-size: 120px; filter: drop-shadow(0 0 30px var(--primary-yellow)); display: block; animation: bounceTrophy 1s infinite alternate; }
+        .trophy-text { color: #fff; margin-top: 20px; font-size: 32px; font-weight: 900; text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
+        @keyframes bounceTrophy { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+
         /* شاشة تسجيل الدخول */
         #login-screen {
             position: fixed;
@@ -812,6 +833,13 @@
 </head>
 <body>
 
+    <div id="success-trophy-overlay" class="trophy-overlay">
+        <div class="trophy-content">
+            <span class="trophy-icon">🏆</span>
+            <div class="trophy-text" id="trophy-custom-text">تم التسجيل بنجاح!</div>
+        </div>
+    </div>
+
     <div id="login-screen">
         <div class="login-card">
             <div class="login-logo">
@@ -1080,9 +1108,10 @@
                         قم بفتح وتشغيل محرك الكاميرا وتوجيه كود الـ QR الموجود ببطاقة المشترك الذكية المسلمة إليه لتسجيل حضوره أوتوماتيكياً بالدفاتر.
                     </p>
                     
-                    <div style="margin-bottom: 20px;">
-                        <button class="btn btn-primary" id="scanner-btn-start" onclick="startCameraEngine()">🎥 تشغيل محرك الكاميرا الحية</button>
+                    <div style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="scanner-btn-start" onclick="startCameraEngine()">🎥 تشغيل محرك الكاميرا الحية بثبات</button>
                         <button class="btn btn-danger" id="scanner-btn-stop" style="display: none;" onclick="stopCameraEngine()">🛑 إيقاف محرك الكاميرا</button>
+                        <button class="btn btn-success" onclick="handleDailyCheckIn()">📝 تسجيل حضور يدوي (زر التسجيل)</button>
                     </div>
 
                     <div id="scanner-viewport">
@@ -1312,6 +1341,7 @@
         </div>
     </div>
 
+    <audio id="beep-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
     <audio id="beep-daily" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
     <audio id="beep-activation" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
     <audio id="beep-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-84.wav" preload="auto"></audio>
@@ -1366,8 +1396,14 @@
         window.firebaseLogin = function(username, password) {
             const email = username.includes('@') ? username : `${username}@powergym.com`;
             signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    playAppSound('beep-success');
+                    triggerScreenFlash('success');
+                })
                 .catch((error) => {
                     console.error("خطأ في تسجيل الدخول السحابي:", error);
+                    playAppSound('beep-error');
+                    triggerScreenFlash('error');
                     const err = document.getElementById('login-error-msg');
                     if (err) {
                         err.style.display = 'block';
@@ -1380,6 +1416,8 @@
             if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟")) {
                 signOut(auth).then(() => {
                     console.log("تم تسجيل الخروج بنجاح");
+                    playAppSound('beep-delete');
+                    triggerScreenFlash('success');
                 }).catch((error) => {
                     console.error("خطأ في تسجيل الخروج:", error);
                     alert("حدث خطأ أثناء محاولة تسجيل الخروج.");
@@ -1435,6 +1473,30 @@
             if (audio) {
                 audio.currentTime = 0;
                 audio.play().catch(e => console.log('Audio play error:', e));
+            }
+        }
+
+        // --- تأثير التنبيه الضوئي للفلاش ---
+        function triggerScreenFlash(type) {
+            document.body.classList.remove('screen-flash-success', 'screen-flash-error');
+            void document.body.offsetWidth; // Trigger reflow لتفعيل التأثير مجدداً
+            if (type === 'success') {
+                document.body.classList.add('screen-flash-success');
+            } else if (type === 'error') {
+                document.body.classList.add('screen-flash-error');
+            }
+        }
+
+        // --- إظهار كأس البطولة (التأثير المرئي) ---
+        function showTrophySuccess(customText = 'تم التسجيل بنجاح!') {
+            const overlay = document.getElementById('success-trophy-overlay');
+            const textElem = document.getElementById('trophy-custom-text');
+            if(textElem) textElem.innerText = customText;
+            if(overlay) {
+                overlay.classList.add('show');
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 1500); // تختفي الشاشة بعد ثانية ونصف
             }
         }
 
@@ -1494,10 +1556,14 @@
                 window.firebaseLogin(user, pass);
             } else {
                 if (user.toLowerCase() === 'rehab' && pass === '123456') {
+                    playAppSound('beep-success');
+                    triggerScreenFlash('success');
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('app-container').style.display = 'flex';
                     refreshSystemCore(true);
                 } else {
+                    playAppSound('beep-error');
+                    triggerScreenFlash('error');
                     const err = document.getElementById('login-error-msg');
                     err.style.display = 'block';
                     setTimeout(() => { err.style.display = 'none'; }, 5000);
@@ -1523,6 +1589,7 @@
         }
 
         function toggleVisualTheme() {
+            playAppSound('beep-click');
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const targetTheme = currentTheme === 'cyberpunk' ? 'light' : 'cyberpunk';
             document.documentElement.setAttribute('data-theme', targetTheme);
@@ -1531,12 +1598,14 @@
         }
 
         function triggerCloudSyncFeedback() {
+            playAppSound('beep-click');
             if (window.syncToCloud) {
                 window.syncToCloud();
             }
         }
 
         function switchView(viewId) {
+            playAppSound('beep-click'); // تنبيه صوتي لكل فعل تنقل
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
 
@@ -1611,6 +1680,7 @@
         }
 
         function openMemberModal(editCode = null) {
+            playAppSound('beep-click');
             const modal = document.getElementById('member-modal');
             
             if (editCode) {
@@ -1648,10 +1718,10 @@
         }
 
         function closeModal(modalId) {
+            playAppSound('beep-click');
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // الدالة المحدثة لحساب السعر بناءً على نسبة الخصم والتعديل الجديد
         function autoFillPriceAndExpiry() {
             const plan = document.getElementById('m-plan').value;
             const startVal = document.getElementById('m-start-date').value;
@@ -1662,7 +1732,7 @@
             let basePrice = 0; let addedMonths = 0; let addedDays = 0;
 
             switch(plan) {
-                case 'اشتراك شهري عادي': basePrice = 200; addedMonths = 1; break; // تم التعديل إلى 200 بدلاً من 300
+                case 'اشتراك شهري عادي': basePrice = 200; addedMonths = 1; break; 
                 case 'اشتراك ربع سنوي': basePrice = 800; addedMonths = 3; break;
                 case 'اشتراك نصف سنوي': basePrice = 1500; addedMonths = 6; break;
                 case 'اشتراك سنوي كامل': basePrice = 2500; addedMonths = 12; break;
@@ -1670,7 +1740,6 @@
                 case 'باقة خاصة VIP VIP': basePrice = 600; addedMonths = 1; break;
             }
 
-            // تطبيق الخصم وإدراجه في حقل السعر النهائي تلقائياً
             if(basePrice > 0) {
                 let finalPrice = basePrice - (basePrice * (discountPercent / 100));
                 document.getElementById('m-price').value = finalPrice;
@@ -1696,6 +1765,8 @@
             const editCode = document.getElementById('edit-member-code-holder').value;
 
             if (!name || !phone || !plan || isNaN(price) || !startDate || !endDate) {
+                playAppSound('beep-error');
+                triggerScreenFlash('error');
                 alert('الرجاء التأكد من إدخال كافة الحقول المطلوبة!');
                 return;
             }
@@ -1713,7 +1784,6 @@
                     gymState.members[idx].healthStatus = healthStatus;
                     gymState.members[idx].healthNotes = healthNotes;
 
-                    // تحديث السجل المالي المرتبط بهذا المشترك تلقائياً
                     let txIndex = gymState.transactions.findIndex(t => t.desc.includes(`(كود: ${editCode})`));
                     if(txIndex !== -1) {
                         gymState.transactions[txIndex].amount = price;
@@ -1721,6 +1791,8 @@
                         gymState.transactions[txIndex].date = startDate;
                     }
                 }
+                playAppSound('beep-success'); 
+                triggerScreenFlash('success');
             } else {
                 const newCode = gymState.config.nextCode++;
                 gymState.members.push({
@@ -1732,9 +1804,12 @@
                     desc: `اشتراك العضو: ${name} (كود: ${newCode}) - باقة: ${plan}` + (discount > 0 ? ` (شامل خصم ${discount}%)` : ``),
                     amount: price
                 });
+                
+                playAppSound('beep-success'); 
+                triggerScreenFlash('success');
+                showTrophySuccess('تم تسجيل المشترك بنجاح!'); // كأس البطولة للمشترك الجديد
             }
 
-            playAppSound('beep-success'); 
             closeModal('member-modal');
             refreshSystemCore();
         }
@@ -1743,6 +1818,7 @@
             if (confirm(`هل أنت متأكد من حذف المشترك صاحب الكود [${code}] نهائياً؟`)) {
                 gymState.members = gymState.members.filter(x => x.code != code);
                 playAppSound('beep-delete'); 
+                triggerScreenFlash('error'); // وميض أحمر يعبر عن الحذف
                 refreshSystemCore();
             }
         }
@@ -1790,17 +1866,17 @@
         }
 
         function resetMembersFilter() {
+            playAppSound('beep-click');
             document.getElementById('member-search-input').value = '';
             filterMembersTable();
         }
 
         function openQrCard(memberCode) {
+            playAppSound('beep-click');
             const m = gymState.members.find(x => x.code == memberCode);
             if(!m) return;
 
-            // حفظ كود المشترك للواتساب
             document.getElementById('current-qr-member-code').value = m.code;
-
             const todayStr = new Date().toISOString().split('T')[0];
             const isExpired = m.endDate < todayStr;
 
@@ -1842,13 +1918,12 @@
             document.getElementById('qr-card-modal').classList.add('active');
         }
 
-        // الدالة الجديدة المخصصة لإرسال كارت المشترك الذكي عبر الواتساب
         function sendCardViaWhatsApp() {
+            playAppSound('beep-click');
             const memberCode = document.getElementById('current-qr-member-code').value;
             const m = gymState.members.find(x => x.code == memberCode);
             if(!m) return;
 
-            // تنسيق رقم الهاتف ليناسب كود الدولة (مصر +20)
             let phoneStr = m.phone.replace(/\D/g, ''); 
             if (phoneStr.startsWith('0')) {
                 phoneStr = '20' + phoneStr.substring(1);
@@ -1856,11 +1931,9 @@
                 phoneStr = '20' + phoneStr;
             }
 
-            // توليد روابط ديناميكية للصور (الباركود) للواتساب
             const qrDailyUrl = `https://quickchart.io/qr?text=${m.code}&size=250&dark=0f172a`;
             const qrActivationUrl = `https://quickchart.io/qr?text=PG-${m.code}&size=250&dark=ff3333`;
 
-            // صياغة نص الرسالة
             const message = `أهلاً بك كابتن [ ${m.name} ] في صالة Power Gym ⚡\n\nتم تسجيل اشتراكك واصدار كروتك بنجاح 🥳\nنوع الباقة: ${m.plan}\nالكود الخاص بك: ${m.code}\nتاريخ النهاية: ${m.endDate}\n\n1️⃣ للدخول اليومي للصالة، استخدمي باركود الحضور من هنا:\n${qrDailyUrl}\n\n2️⃣ كود تفعيل الاشتراك الخاص بك للإدارة:\n${qrActivationUrl}\n\nنتمنى لكِ تمريناً ممتعاً! 💪`;
 
             const encodedMessage = encodeURIComponent(message);
@@ -1869,12 +1942,14 @@
         }
 
         function printSmartCard() {
+            playAppSound('beep-click');
             document.body.classList.add('print-card-mode');
             window.print();
             setTimeout(() => { document.body.classList.remove('print-card-mode'); }, 500);
         }
 
         function printDataSection(hideActions = false) {
+            playAppSound('beep-click');
             document.body.classList.add('print-section-mode');
             if (hideActions) { document.body.classList.add('hide-actions-col'); }
             window.print();
@@ -1889,6 +1964,7 @@
         }
 
         function handleDailyCheckIn() {
+            playAppSound('beep-click');
             registerAttendanceDirectly();
         }
 
@@ -1909,6 +1985,7 @@
                 const memberCode = parseInt(scannedValue, 10);
                 if(isNaN(memberCode)) { 
                     playAppSound('beep-error');
+                    triggerScreenFlash('error');
                     alert("الكود المدخل غير صحيح!"); 
                     return; 
                 }
@@ -1920,6 +1997,7 @@
             const member = gymState.members.find(m => String(m.code) === String(memberId));
             if (!member) {
                 playAppSound('beep-error');
+                triggerScreenFlash('error');
                 alert("⚠️ خطأ: كود التفعيل الممسوح غير تابع لأي مشتركة حالية!");
                 return;
             }
@@ -1934,6 +2012,7 @@
 
                 if (daysDiff < 25) {
                     playAppSound('beep-error'); 
+                    triggerScreenFlash('error');
                     alert(`🚫 حماية الاشتراك:\nالمشتركة [ ${member.name} ] قامت بتفعيل اشتراكها الشهري بالفعل لهذه الدورة بتاريخ: ${member.lastActivationDate}.\nلا يمكن إعادة استخدام كود التفعيل الشهري (PG) حالياً وتكرار الإيراد المالي.`);
                     return;
                 }
@@ -1952,6 +2031,8 @@
             });
 
             playAppSound('beep-activation'); 
+            triggerScreenFlash('success');
+            showTrophySuccess(`تم التفعيل لـ ${member.name}`); // تأثير الكأس
 
             alert(`🎉 تم تفعيل الاشتراك بنجاح للمشتركة: ${member.name}\nالصلاحية الجديدة حتى: ${member.endDate}\n💰 تم ترحيل مبلغ ${member.price} ج.م للخزينة.`);
             
@@ -1965,6 +2046,7 @@
 
             if (!m) {
                 playAppSound('beep-error');
+                triggerScreenFlash('error');
                 alert(`⚠️ تنبيه حرج: لا يوجد أي عضو مسجل بالنظام يحمل الكود رقم [ ${memberCode} ]!`);
                 return;
             }
@@ -1972,6 +2054,7 @@
             const alreadyAttended = gymState.attendance.some(a => String(a.memberCode) === String(memberCode) && a.date === todayStr);
             if (alreadyAttended) {
                 playAppSound('beep-error'); 
+                triggerScreenFlash('error');
                 const confirmAgain = confirm(`الكابتن [ ${m.name} ] مسجلة حضور اليوم بالفعل في الدفاتر! هل أنت متأكد من رغبتك في تسجيل حضورها مرة ثانية؟`);
                 if (!confirmAgain) {
                     return; 
@@ -1994,10 +2077,13 @@
             const feedbackBox = document.getElementById('scan-feedback-message');
             if (isExpired) {
                 playAppSound('beep-error'); 
+                triggerScreenFlash('error');
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--danger-red)">❌ تم التحضير! عضو منتهي العقد: ${m.name}</span>`;
                 alert(`🚨 تحذير للكابتن: المشترك ${m.name} حضر الآن ولكن اشتراكه منتهي الصلاحية! يرجى مسح كارت الـ PG للتجديد.`);
             } else {
                 playAppSound('beep-daily'); 
+                triggerScreenFlash('success');
+                showTrophySuccess('حضور موفق! 🏆'); // شاشة الكأس المنبثقة
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--success-green)">✅ تم رصد الحضور بنجاح للمشترك: ${m.name}</span>`;
             }
 
@@ -2052,6 +2138,7 @@
             if (confirm('هل تريدين بالتأكيد حذف وإلغاء قيد الحضور هذا من سجلات اليوم؟')) {
                 gymState.attendance.splice(index, 1);
                 playAppSound('beep-delete'); 
+                triggerScreenFlash('error');
                 refreshSystemCore();
             }
         }
@@ -2060,26 +2147,30 @@
             if (confirm('🚨 تحذير: هل أنت متأكد من تصفير ومسح سجل الحضور بالكامل؟ لا يمكن التراجع عن هذا!')) {
                 gymState.attendance = [];
                 playAppSound('beep-delete'); 
+                triggerScreenFlash('error');
                 refreshSystemCore();
             }
         }
 
         function resetAttendanceFilter() {
+            playAppSound('beep-click');
             document.getElementById('filter-attendance-date').value = '';
             document.getElementById('filter-attendance-code').value = '';
             filterAttendanceData();
         }
 
         function startCameraEngine() {
+            playAppSound('beep-click');
             document.getElementById('scanner-btn-start').style.display = 'none';
             document.getElementById('scanner-btn-stop').style.display = 'inline-flex';
-            document.getElementById('scan-feedback-message').innerHTML = `📷 جاري تهيئة تيار الكاميرا والعدسة...`;
+            document.getElementById('scan-feedback-message').innerHTML = `📷 جاري تهيئة تيار الكاميرا والعدسة بثبات...`;
 
             html5QrScannerInstance = new Html5Qrcode("qr-reader");
             
+            // إعدادات الكاميرا محسنة لثبات أعلى (fps: 10)
             html5QrScannerInstance.start(
                 { facingMode: "environment" },
-                { fps: 15, qrbox: { width: 250, height: 250 } },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
                     if (!canProcessScan()) {
                         return; 
@@ -2099,6 +2190,8 @@
                 (errorMessage) => { }
             ).catch(err => {
                 console.error("خطأ في تفعيل الكاميرا:", err);
+                playAppSound('beep-error');
+                triggerScreenFlash('error');
                 document.getElementById('scan-feedback-message').innerHTML = `<span style="color:var(--danger-red)">❌ فشل التشغيل! تأكد من صلاحية الكاميرا.</span>`;
                 stopCameraEngine();
             });
@@ -2126,6 +2219,7 @@
         }
 
         function openFinanceModal(type) {
+            playAppSound('beep-click');
             document.getElementById('finance-type-holder').value = type;
             document.getElementById('finance-modal-title').innerText = type === 'income' ? 'تحصيل قيد إيراد جديد بالخزينة' : 'إدراج بند مصروفات جديد';
             document.getElementById('f-amount').value = '';
@@ -2141,6 +2235,7 @@
 
             if(!amount || !desc) { 
                 playAppSound('beep-error');
+                triggerScreenFlash('error');
                 alert('الرجاء إدخال القيمة المالية والبيان لتأكيد السند المالي!'); 
                 return; 
             }
@@ -2152,6 +2247,7 @@
             });
 
             playAppSound('beep-success'); 
+            triggerScreenFlash('success');
             closeModal('finance-modal');
             refreshSystemCore();
         }
@@ -2160,6 +2256,7 @@
             if(confirm('هل تريد بالتأكيد حذف هذا القيد المالي نهائياً؟')) {
                 gymState.transactions.splice(index, 1);
                 playAppSound('beep-delete'); 
+                triggerScreenFlash('error');
                 refreshSystemCore();
             }
         }
@@ -2216,6 +2313,18 @@
             if (dashboardTbody && dashboardTbody.children.length === 0) {
                 dashboardTbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-muted); padding:15px;">لا توجد معاملات مدرجة حديثاً.</td></tr>`;
             }
+        }
+
+        // --- تسجيل وتهيئة الـ Service Worker لضمان استمرار الـ PWA ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
         }
     </script>
 </body>
