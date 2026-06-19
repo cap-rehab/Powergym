@@ -75,13 +75,13 @@
             flex-direction: column;
         }
 
-        /* --- تأثير الفلاش الضوئي للنجاح والخطأ (إضافة جديدة) --- */
+        /* --- تأثير الفلاش الضوئي للنجاح والخطأ --- */
         @keyframes flashSuccess { 0% { box-shadow: inset 0 0 150px rgba(34, 197, 94, 0.5); } 100% { box-shadow: inset 0 0 0 transparent; } }
         @keyframes flashError { 0% { box-shadow: inset 0 0 150px rgba(239, 68, 68, 0.5); } 100% { box-shadow: inset 0 0 0 transparent; } }
         .screen-flash-success { animation: flashSuccess 0.6s ease-out; }
         .screen-flash-error { animation: flashError 0.6s ease-out; }
 
-        /* --- شاشة الكأس المنبثقة للنجاح (Trophy - إضافة جديدة) --- */
+        /* --- شاشة الكأس المنبثقة للنجاح (Trophy) --- */
         .trophy-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.8);
@@ -773,61 +773,144 @@
             background: rgba(225, 29, 72, 0.1);
         }
 
-        /* الطباعة الموحدة والذكية */
+        /* --- نظام الطباعة والتقارير المطور والذكي --- */
         @media print {
             @page {
                 size: auto;
-                margin: 0mm; /* إخفاء الهيدر والفوتر الخاص بالمتصفح */
-            }
-            body {
-                margin: 1.5cm; /* إضافة هامش داخلي نظيف للورقة */
+                margin: 15mm; /* هامش حقيقي نظيف للورقة للحد من القص للمتصفح */
             }
             
+            /* إجبار المتصفحات على إظهار الألوان وخلفيات الصور دون تجاهلها */
+            * { 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+
+            /* 1. وضع طباعة التقارير والجداول المخصصة لبيانات الشاشة الحالية */
+            body.print-section-mode header,
+            body.print-section-mode nav,
+            body.print-section-mode .no-print,
+            body.print-section-mode button,
+            body.print-section-mode input,
+            body.print-section-mode select,
+            body.print-section-mode textarea,
+            body.print-section-mode .btn-group,
+            body.print-section-mode .panel-header > div:not(.panel-title),
+            body.print-section-mode .modal-overlay,
+            body.print-section-mode #login-screen {
+                display: none !important;
+            }
+
+            body.print-section-mode #app-container {
+                display: block !important;
+                background: transparent !important;
+            }
+
+            body.print-section-mode main {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            body.print-section-mode .view-section {
+                display: none !important;
+            }
+
+            body.print-section-mode .view-section.active {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+            }
+
+            /* هندسة تفعيل الخلفية المائية بأعلى ثبات متقاطع وعبر الأجهزة المشغلة */
             body.print-section-mode::before {
                 content: "";
                 position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 70%; 
-                height: 70%;
-                background-image: url('image_0.png');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-                opacity: 0.08; 
-                z-index: -1;
+                top: 0; left: 0; right: 0; bottom: 0;
+                width: 100%; height: 100%;
+                background-image: url('image_0.png') !important;
+                background-size: 380px auto !important; /* حجم متناسق للعلامة المائية منتصف الورقة */
+                background-repeat: no-repeat !important;
+                background-position: center center !important;
+                opacity: 0.08 !important; 
+                z-index: -99999 !important;
                 pointer-events: none;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            body.print-card-mode * { visibility: hidden; }
-            body.print-card-mode #print-area-target, 
-            body.print-card-mode #print-area-target * { visibility: visible; }
-            body.print-card-mode #print-area-target { position: absolute; top: 0; left: 0; width: 100%; }
+            /* تعديل مظهر كتل البيانات لتظهر بشكل رسمي وجذاب للغاية بالورق */
+            body.print-section-mode .panel-block { 
+                border: 1px solid #cbd5e1 !important; 
+                box-shadow: none !important; 
+                margin-bottom: 25px !important; 
+                padding: 15px !important; 
+                background: #ffffff !important;
+                page-break-inside: avoid; /* منع تمزق الكتل بين الصفحات */
+            }
             
-            .no-print { display: none !important; }
+            body.print-section-mode .panel-title { 
+                justify-content: center !important; 
+                font-size: 22px !important; 
+                font-weight: 900 !important;
+                border-bottom: 2px solid #0f172a !important; 
+                padding-bottom: 10px !important; 
+                margin-bottom: 20px !important;
+                display: flex !important;
+                color: #0f172a !important;
+            }
             
-            body.print-section-mode * { visibility: hidden; }
-            body.print-section-mode .view-section.active, 
-            body.print-section-mode .view-section.active * { visibility: visible; }
-            body.print-section-mode .view-section.active { position: absolute; top: 0; left: 0; width: 100%; padding: 0; margin: 0; }
+            body.print-section-mode table { 
+                border: 1px solid #94a3b8 !important; 
+                width: 100% !important; 
+                border-collapse: collapse !important; 
+                margin-top: 15px !important;
+            }
             
-            body.print-section-mode .btn-group, 
-            body.print-section-mode input,
-            body.print-section-mode select,
-            body.print-section-mode button,
-            body.print-section-mode .panel-header > div { display: none !important; } 
-            
-            body.print-section-mode .panel-title { justify-content: center; font-size: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;}
-            
-            body.print-section-mode .panel-block { border: none !important; box-shadow: none !important; margin-bottom: 20px; padding: 0; background: transparent !important; }
-            body.print-section-mode table { border: 1px solid #000; width: 100%; border-collapse: collapse; margin-top: 15px;}
-            body.print-section-mode th, body.print-section-mode td { border: 1px solid #000; padding: 10px; color: #000 !important; background: transparent !important;}
+            body.print-section-mode th { 
+                border: 1px solid #94a3b8 !important; 
+                padding: 10px !important; 
+                color: #0f172a !important; 
+                background-color: #f1f5f9 !important;
+                font-weight: bold !important;
+                text-align: center !important;
+            }
+
+            body.print-section-mode td { 
+                border: 1px solid #cbd5e1 !important; 
+                padding: 10px !important; 
+                color: #000000 !important; 
+                background: transparent !important;
+                text-align: center !important;
+            }
             
             body.hide-actions-col th:last-child, 
-            body.hide-actions-col td:last-child { display: none !important; }
-            
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body.hide-actions-col td:last-child,
+            body.hide-actions-col .no-print { 
+                display: none !important; 
+            }
+
+            /* 2. وضع طباعة كروت المشتركين الذكية (ID) */
+            body.print-card-mode * { 
+                visibility: hidden !important; 
+            }
+            body.print-card-mode #print-area-target, 
+            body.print-card-mode #print-area-target * { 
+                visibility: visible !important; 
+            }
+            body.print-card-mode #print-area-target { 
+                position: absolute !important; 
+                top: 0 !important; 
+                left: 0 !important; 
+                width: 100% !important; 
+                display: block !important;
+            }
+            body.print-card-mode .no-print,
+            body.print-card-mode .class-no-print {
+                display: none !important;
+                visibility: hidden !important;
+            }
         }
     </style>
 </head>
@@ -1089,7 +1172,7 @@
                                     <th>اسم المشترك ثلاثي</th>
                                     <th>باقة الاشتراك الحالية</th>
                                     <th>حالة صلاحية الكارت</th>
-                                    <th>إجراءات الحذف</th>
+                                    <th class="no-print">إجراءات الحذف</th>
                                 </tr>
                             </thead>
                             <tbody id="attendance-table-rows">
@@ -1144,7 +1227,7 @@
                                     <th>نوع السند المالي</th>
                                     <th>البيان والوصف التفصيلي</th>
                                     <th>القيمة المستندة</th>
-                                    <th>الإجراءات القانونية</th>
+                                    <th class="no-print">الإجراءات القانونية</th>
                                 </tr>
                             </thead>
                             <tbody id="finance-table-rows">
@@ -1974,7 +2057,7 @@
                 return;
             }
 
-            const codeInput = prompt("الرجاء إدخال رقم كود المشترك التعريفي بدقة لتحضيره فورياً بالدفتر الذكي:");
+            const codeInput = prompt("الرجاء إدخل رقم كود المشترك التعريفي بدقة لتحضيره فورياً بالدفتر الذكي:");
             if(!codeInput) return;
 
             const scannedValue = codeInput.trim();
@@ -2121,7 +2204,7 @@
                         <td>
                             ${isRowExpired ? '<span class="badge badge-danger">🔴 منتهي</span>' : '<span class="badge badge-success">🟢 نشط ومقبول</span>'}
                         </td>
-                        <td>
+                        <td class="no-print">
                             <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteSingleAttendance(${trueIndex})">🗑️ حذف القيد</button>
                         </td>
                     `;
@@ -2298,7 +2381,7 @@
                             <td style="font-weight: bold; font-size:15px; color: ${t.type === 'إيراد' ? 'var(--success-green)' : 'var(--danger-red)'}">
                                 ${t.type === 'إيراد' ? '+' : '-'}${t.amount} ج.م
                             </td>
-                            <td>
+                            <td class="no-print">
                                 <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteTransaction(${trueIndex})">🗑️ حذف</button>
                             </td>
                         `;
