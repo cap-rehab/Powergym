@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
-    <link rel="apple-touch-icon" href="image_0.png">
+    <link rel="apple-touch-icon" href="file_0000000089e8722fa036f9f292888010.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -96,695 +96,150 @@
         .trophy-text { color: #fff; margin-top: 20px; font-size: 32px; font-weight: 900; text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
         @keyframes bounceTrophy { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-        /* شاشة تسجيل الدخول */
-        #login-screen {
+        /* --- شاشة الترحيب (Splash Screen) --- */
+        #splash-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--dark-blue);
-            z-index: 9999;
+            z-index: 100000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .splash-logo-container {
+            width: 140px; height: 140px; border-radius: 50%; background-color: var(--bg-panel);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(2, 132, 199, 0.6); animation: pulseGlow 1.5s infinite alternate;
+            margin-bottom: 25px; overflow: hidden; border: 4px solid var(--primary-blue);
+        }
+        .splash-logo-container img { width: 100%; height: 100%; object-fit: contain; }
+        .splash-title { color: #ffffff; font-size: 38px; font-weight: 900; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); text-transform: uppercase; }
+        .splash-subtitle { color: var(--primary-blue); font-size: 16px; font-weight: 700; margin-bottom: 40px; text-align: center; }
+        .splash-loader { width: 60px; height: 60px; border: 5px solid rgba(255, 255, 255, 0.1); border-top-color: var(--primary-yellow); border-radius: 50%; animation: spinLoader 1s linear infinite; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 20px rgba(2, 132, 199, 0.4); transform: scale(1); } 100% { box-shadow: 0 0 60px rgba(2, 132, 199, 0.9); transform: scale(1.08); } }
+        @keyframes spinLoader { to { transform: rotate(360deg); } }
+        .splash-hidden { opacity: 0; visibility: hidden; }
+
+        /* شاشة تسجيل الدخول */
+        #login-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--dark-blue); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
         }
 
-        .login-card {
-            background-color: var(--bg-panel);
-            width: 100%;
-            max-width: 420px;
-            border-radius: var(--radius-lg);
-            padding: 40px 30px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--neon-glow);
-            background: transparent;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .login-subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .input-control {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-size: 15px;
-            outline: none;
-        }
-
-        .input-control:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px var(--light-blue);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-blue);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--neon-glow);
-            margin-top: 10px;
-        }
-
-        .btn-login:hover {
-            opacity: 0.9;
-        }
-
-        .error-msg {
-            color: var(--danger-red);
-            font-size: 13px;
-            margin-top: 15px;
-            display: none;
-        }
+        .login-card { background-color: var(--bg-panel); width: 100%; max-width: 420px; border-radius: var(--radius-lg); padding: 40px 30px; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); text-align: center; }
+        .login-logo { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: var(--neon-glow); background: transparent; }
+        .login-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .login-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-main); }
+        .input-control { width: 100%; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-base); color: var(--text-main); font-size: 15px; outline: none; }
+        .input-control:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px var(--light-blue); }
+        .btn-login { width: 100%; padding: 14px; background-color: var(--primary-blue); color: #fff; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: var(--neon-glow); margin-top: 10px; }
+        .btn-login:hover { opacity: 0.9; }
+        .error-msg { color: var(--danger-red); font-size: 13px; margin-top: 15px; display: none; }
 
         /* الحاوية الرئيسية للتطبيق */
-        #app-container {
-            display: none;
-            flex-direction: column;
-            flex: 1;
-        }
+        #app-container { display: none; flex-direction: column; flex: 1; }
+        header { background-color: var(--bg-panel); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+        .brand-section { display: flex; align-items: center; gap: 15px; }
+        .app-logo { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: transparent; }
+        .brand-name h1 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .brand-name p { font-size: 12px; color: var(--text-muted); }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .auto-save-indicator { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); background-color: var(--bg-base); padding: 6px 12px; border-radius: 20px; }
+        .save-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success-green); opacity: 0.2; transition: all 0.3s ease; }
+        .save-dot.saving { opacity: 1; box-shadow: 0 0 10px var(--success-green); background-color: #39ff14; }
+        .sync-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 12px; background-color: var(--light-blue); color: var(--primary-blue); border-radius: 20px; font-weight: 500; cursor: pointer; }
+        .sync-indicator.syncing i { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(-360deg); } }
+        .theme-toggle-btn { background: none; border: 1px solid var(--border-color); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 18px; }
+        .theme-toggle-btn:hover { background-color: var(--bg-base); }
+        .logout-btn { background-color: #fef2f2; color: var(--danger-red); border: 1px solid #fecaca; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s; }
+        .logout-btn:hover { background-color: var(--danger-red); color: #fff; }
 
-        /* الهيدر العلوي */
-        header {
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .app-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-        }
-
-        .brand-name h1 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .brand-name p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .auto-save-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-muted);
-            background-color: var(--bg-base);
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-
-        .save-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success-green);
-            opacity: 0.2;
-            transition: all 0.3s ease;
-        }
-
-        .save-dot.saving {
-            opacity: 1;
-            box-shadow: 0 0 10px var(--success-green);
-            background-color: #39ff14;
-        }
-
-        .sync-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            padding: 6px 12px;
-            background-color: var(--light-blue);
-            color: var(--primary-blue);
-            border-radius: 20px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .sync-indicator.syncing i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(-360deg); }
-        }
-
-        .theme-toggle-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-main);
-            font-size: 18px;
-        }
-
-        .theme-toggle-btn:hover {
-            background-color: var(--bg-base);
-        }
-        
-        .logout-btn {
-            background-color: #fef2f2;
-            color: var(--danger-red);
-            border: 1px solid #fecaca;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background-color: var(--danger-red);
-            color: #fff;
-        }
-
-        /* نافذة التنقل والتبويبات الرئيسية */
-        .main-nav {
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            padding: 0 30px;
-            gap: 5px;
-            overflow-x: auto;
-        }
-
-        .nav-link {
-            padding: 16px 20px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-link:hover {
-            color: var(--text-main);
-            background-color: var(--bg-base);
-        }
-
-        .nav-link.active {
-            color: var(--primary-blue);
-            border-bottom-color: var(--primary-blue);
-            font-weight: 700;
-        }
-
-        /* محتوى العرض الأساسي */
-        main {
-            padding: 30px;
-            flex: 1;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .view-section {
-            display: none;
-        }
-
-        .view-section.active {
-            display: block;
-        }
-
-        /* الكروت والشبكة الإحصائية */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .stat-info h3 {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .stat-info p {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--text-main);
-        }
-
-        .stat-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
+        .main-nav { background-color: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; padding: 0 30px; gap: 5px; overflow-x: auto; }
+        .nav-link { padding: 16px 20px; color: var(--text-muted); text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .nav-link:hover { color: var(--text-main); background-color: var(--bg-base); }
+        .nav-link.active { color: var(--primary-blue); border-bottom-color: var(--primary-blue); font-weight: 700; }
+        main { padding: 30px; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
+        .stat-info h3 { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+        .stat-info p { font-size: 28px; font-weight: 900; color: var(--text-main); }
+        .stat-icon { width: 54px; height: 54px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .icon-blue { background-color: var(--light-blue); color: var(--primary-blue); }
         .icon-yellow { background-color: var(--light-yellow); color: var(--dark-yellow); }
         .icon-red { background-color: #fee2e2; color: var(--danger-red); }
         .icon-green { background-color: #dcfce7; color: var(--success-green); }
-
-        /* الأقسام والكتل البرمجية */
-        .dashboard-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 20px;
-            align-items: start;
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel-block {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 20px;
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .panel-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* أزرار العمليات والتنفيذ */
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            border: 1px solid transparent;
-            outline: none;
-            white-space: nowrap;
-        }
-
+        .dashboard-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; align-items: start; }
+        @media (max-width: 1024px) { .dashboard-row { grid-template-columns: 1fr; } }
+        .panel-block { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+        .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .panel-title { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; border: 1px solid transparent; outline: none; white-space: nowrap; }
         .btn-primary { background-color: var(--primary-blue); color: #fff; box-shadow: var(--neon-glow); }
         .btn-primary:hover { opacity: 0.9; }
-        
         .btn-secondary { background-color: var(--bg-base); color: var(--text-main); border-color: var(--border-color); }
         .btn-secondary:hover { background-color: var(--border-color); }
-
         .btn-success { background-color: var(--success-green); color: #fff; }
         .btn-danger { background-color: var(--danger-red); color: #fff; }
         .btn-info { background-color: #0ea5e9; color: #fff; }
+        .btn-warning { background-color: #f59e0b; color: #fff; }
+        .btn-warning:hover { opacity: 0.9; }
         .btn-whatsapp { background-color: var(--whatsapp-green); color: #fff; }
         .btn-whatsapp:hover { opacity: 0.9; }
 
-        /* الكاميرا وقارئ الـ QR */
-        #scanner-viewport {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 2px dashed var(--primary-blue);
-            background-color: #000;
-            position: relative;
-        }
-
-        #qr-reader {
-            width: 100% !important;
-            border: none !important;
-        }
-
-        #qr-reader__dashboard {
-            padding: 10px !important;
-            background: var(--bg-panel) !important;
-            color: var(--text-main) !important;
-        }
-
-        /* الجداول واستعراض البيانات */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            font-size: 14px;
-        }
-
-        th {
-            background-color: var(--bg-base);
-            color: var(--text-muted);
-            padding: 14px 16px;
-            font-weight: 700;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 14px 16px;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-        }
-
-        tr:hover td {
-            background-color: var(--bg-base);
-        }
-
-        .badge {
-            display: inline-flex;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
+        #scanner-viewport { width: 100%; max-width: 480px; margin: 0 auto; border-radius: var(--radius-md); overflow: hidden; border: 2px dashed var(--primary-blue); background-color: #000; position: relative; }
+        #qr-reader { width: 100% !important; border: none !important; }
+        #qr-reader__dashboard { padding: 10px !important; background: var(--bg-panel) !important; color: var(--text-main) !important; }
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
+        th { background-color: var(--bg-base); color: var(--text-muted); padding: 14px 16px; font-weight: 700; border-bottom: 1px solid var(--border-color); }
+        td { padding: 14px 16px; color: var(--text-main); border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        tr:hover td { background-color: var(--bg-base); }
+        .badge { display: inline-flex; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
         .badge-success, .badge-active { background-color: #dcfce7; color: var(--success-green); }
         .badge-danger, .badge-expired { background-color: #fee2e2; color: var(--danger-red); }
         .badge-info { background-color: var(--light-blue); color: var(--primary-blue); }
 
-        /* النوافذ العائمة المودال */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-box {
-            background-color: var(--bg-panel);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 600px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            animation: modalSlide 0.3s ease-out;
-        }
-
-        /* تكبير المودال ليناسب عرض الكارتين */
-        #qr-card-modal .modal-box {
-            max-width: 800px; 
-        }
-
-        @keyframes modalSlide {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .modal-body {
-            padding: 24px;
-            max-height: 75vh;
-            overflow-y: auto;
-        }
-
-        .modal-footer {
-            padding: 16px 24px;
-            background-color: var(--bg-base);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 480px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            #qr-card-modal .modal-box { max-width: 100%; }
-            .smart-card-container { flex-direction: column; align-items: center; }
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background-color: var(--bg-panel); border-radius: var(--radius-lg); width: 100%; max-width: 600px; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); overflow: hidden; animation: modalSlide 0.3s ease-out; }
+        #qr-card-modal .modal-box { max-width: 800px; }
+        @keyframes modalSlide { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .modal-title { font-size: 16px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+        .modal-body { padding: 24px; max-height: 75vh; overflow-y: auto; }
+        .modal-footer { padding: 16px 24px; background-color: var(--bg-base); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } #qr-card-modal .modal-box { max-width: 100%; } .smart-card-container { flex-direction: column; align-items: center; } }
 
         /* كارت المشترك للطباعة الهوية الذكية */
-        .smart-card-container {
-            display: flex;
-            flex-direction: row; 
-            justify-content: space-around;
-            gap: 20px;
-            padding: 10px;
-            flex-wrap: wrap;
-        }
-
-        .gym-member-card {
-            width: 330px;
-            height: 200px;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            border-radius: 14px;
-            padding: 15px;
-            position: relative;
-            color: #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border: 2px solid #0284c7;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .gym-member-card.activation-card {
-            border-color: #e11d48; 
-        }
-
-        .card-left {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 2;
-            width: 60%;
-        }
-
-        .card-logo {
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            background: linear-gradient(to right, #00f0ff, #facc15);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .activation-card .card-logo {
-            background: linear-gradient(to right, #ff3333, #facc15);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .card-member-name {
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 10px;
-            color: #fff;
-        }
-
-        .card-member-code {
-            font-size: 12px;
-            color: #00f0ff;
-            font-family: monospace;
-            margin-top: 2px;
-        }
-        
-        .activation-card .card-member-code {
-            color: #ff3333;
-        }
-
-        .card-details-row {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: auto;
-        }
-
-        .card-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            width: 35%;
-        }
-
-        .card-qr-holder {
-            background-color: #fff;
-            padding: 4px;
-            border-radius: 8px;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-bg-decoration {
-            position: absolute;
-            bottom: -30px; left: -30px;
-            width: 150px; height: 150px;
-            background: rgba(2, 132, 199, 0.1);
-            border-radius: 50%;
-            filter: blur(20px);
-            z-index: 1;
-        }
-        
-        .activation-card .card-bg-decoration {
-            background: rgba(225, 29, 72, 0.1);
-        }
+        .smart-card-container { display: flex; flex-direction: row; justify-content: space-around; gap: 20px; padding: 10px; flex-wrap: wrap; }
+        .gym-member-card { width: 330px; height: 200px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 14px; padding: 15px; position: relative; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 2px solid #0284c7; overflow: hidden; display: flex; justify-content: space-between; }
+        .gym-member-card.activation-card { border-color: #e11d48; }
+        .card-left { display: flex; flex-direction: column; justify-content: space-between; z-index: 2; width: 60%; }
+        .card-logo { font-size: 16px; font-weight: 900; letter-spacing: 1px; background: linear-gradient(to right, #00f0ff, #facc15); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .activation-card .card-logo { background: linear-gradient(to right, #ff3333, #facc15); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-member-name { font-size: 15px; font-weight: 700; margin-top: 10px; color: #fff; }
+        .card-member-code { font-size: 12px; color: #00f0ff; font-family: monospace; margin-top: 2px; }
+        .activation-card .card-member-code { color: #ff3333; }
+        .card-details-row { font-size: 11px; color: #94a3b8; margin-top: auto; }
+        .card-right { display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; width: 35%; }
+        .card-qr-holder { background-color: #fff; padding: 4px; border-radius: 8px; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
+        .card-bg-decoration { position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(2, 132, 199, 0.1); border-radius: 50%; filter: blur(20px); z-index: 1; }
+        .activation-card .card-bg-decoration { background: rgba(225, 29, 72, 0.1); }
 
         /* --- نظام الطباعة والتقارير المطور والذكي --- */
         @media print {
-            @page {
-                size: auto;
-                margin: 15mm; /* هامش حقيقي نظيف للورقة للحد من القص للمتصفح */
-            }
-            
-            /* إجبار المتصفحات على إظهار الألوان وخلفيات الصور دون تجاهلها */
-            * { 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
-            }
+            @page { size: auto; margin: 15mm; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             /* 1. وضع طباعة التقارير والجداول المخصصة لبيانات الشاشة الحالية */
             body.print-section-mode header,
@@ -797,124 +252,66 @@
             body.print-section-mode .btn-group,
             body.print-section-mode .panel-header > div:not(.panel-title),
             body.print-section-mode .modal-overlay,
-            body.print-section-mode #login-screen {
-                display: none !important;
-            }
-
-            body.print-section-mode #app-container {
-                display: block !important;
-                background: transparent !important;
-            }
-
-            body.print-section-mode main {
-                padding: 0 !important;
-                margin: 0 !important;
-                max-width: 100% !important;
-                width: 100% !important;
-            }
-
-            body.print-section-mode .view-section {
-                display: none !important;
-            }
-
-            body.print-section-mode .view-section.active {
-                display: block !important;
-                position: relative !important;
-                width: 100% !important;
-            }
-
-            /* هندسة تفعيل الخلفية المائية بأعلى ثبات متقاطع وعبر الأجهزة المشغلة */
+            body.print-section-mode #login-screen { display: none !important; }
+            body.print-section-mode #app-container { display: block !important; background: transparent !important; }
+            body.print-section-mode main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+            body.print-section-mode .view-section { display: none !important; }
+            body.print-section-mode .view-section.active { display: block !important; position: relative !important; width: 100% !important; }
             body.print-section-mode::before {
-                content: "";
-                position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
-                width: 100%; height: 100%;
-                background-image: url('image_0.png') !important;
-                background-size: 380px auto !important; /* حجم متناسق للعلامة المائية منتصف الورقة */
-                background-repeat: no-repeat !important;
-                background-position: center center !important;
-                opacity: 0.08 !important; 
-                z-index: -99999 !important;
-                pointer-events: none;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;
+                background-image: url('file_0000000089e8722fa036f9f292888010.png') !important; background-size: 380px auto !important; background-repeat: no-repeat !important; background-position: center center !important;
+                opacity: 0.08 !important; z-index: -99999 !important; pointer-events: none;
             }
+            body.print-section-mode .panel-block { border: 1px solid #cbd5e1 !important; box-shadow: none !important; margin-bottom: 25px !important; padding: 15px !important; background: #ffffff !important; page-break-inside: avoid; }
+            body.print-section-mode .panel-title { justify-content: center !important; font-size: 22px !important; font-weight: 900 !important; border-bottom: 2px solid #0f172a !important; padding-bottom: 10px !important; margin-bottom: 20px !important; display: flex !important; color: #0f172a !important; }
+            body.print-section-mode table { border: 1px solid #94a3b8 !important; width: 100% !important; border-collapse: collapse !important; margin-top: 15px !important; }
+            body.print-section-mode th { border: 1px solid #94a3b8 !important; padding: 10px !important; color: #0f172a !important; background-color: #f1f5f9 !important; font-weight: bold !important; text-align: center !important; }
+            body.print-section-mode td { border: 1px solid #cbd5e1 !important; padding: 10px !important; color: #000000 !important; background: transparent !important; text-align: center !important; }
+            body.hide-actions-col th:last-child, body.hide-actions-col td:last-child, body.hide-actions-col .no-print { display: none !important; }
 
-            /* تعديل مظهر كتل البيانات لتظهر بشكل رسمي وجذاب للغاية بالورق */
-            body.print-section-mode .panel-block { 
-                border: 1px solid #cbd5e1 !important; 
-                box-shadow: none !important; 
-                margin-bottom: 25px !important; 
-                padding: 15px !important; 
-                background: #ffffff !important;
-                page-break-inside: avoid; /* منع تمزق الكتل بين الصفحات */
-            }
-            
-            body.print-section-mode .panel-title { 
-                justify-content: center !important; 
-                font-size: 22px !important; 
-                font-weight: 900 !important;
-                border-bottom: 2px solid #0f172a !important; 
-                padding-bottom: 10px !important; 
-                margin-bottom: 20px !important;
-                display: flex !important;
-                color: #0f172a !important;
-            }
-            
-            body.print-section-mode table { 
-                border: 1px solid #94a3b8 !important; 
-                width: 100% !important; 
-                border-collapse: collapse !important; 
-                margin-top: 15px !important;
-            }
-            
-            body.print-section-mode th { 
-                border: 1px solid #94a3b8 !important; 
-                padding: 10px !important; 
-                color: #0f172a !important; 
-                background-color: #f1f5f9 !important;
-                font-weight: bold !important;
-                text-align: center !important;
-            }
+            /* 2. وضع طباعة كروت المشتركين الفردية (ID) */
+            body.print-card-mode * { visibility: hidden !important; }
+            body.print-card-mode #print-area-target, body.print-card-mode #print-area-target * { visibility: visible !important; }
+            body.print-card-mode #print-area-target { position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; display: block !important; }
+            body.print-card-mode .no-print, body.print-card-mode .class-no-print { display: none !important; visibility: hidden !important; }
 
-            body.print-section-mode td { 
-                border: 1px solid #cbd5e1 !important; 
-                padding: 10px !important; 
-                color: #000000 !important; 
-                background: transparent !important;
-                text-align: center !important;
+            /* 3. وضع طباعة كل الكروت دفعة واحدة مجمعة (PDF) */
+            body.print-all-cards-mode * { visibility: hidden !important; }
+            body.print-all-cards-mode #batch-print-container, 
+            body.print-all-cards-mode #batch-print-container * { visibility: visible !important; }
+            body.print-all-cards-mode #batch-print-container { 
+                position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; display: block !important; background: transparent !important;
             }
-            
-            body.hide-actions-col th:last-child, 
-            body.hide-actions-col td:last-child,
-            body.hide-actions-col .no-print { 
-                display: none !important; 
+            body.print-all-cards-mode::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;
+                background-image: url('file_0000000089e8722fa036f9f292888010.png') !important; background-size: 380px auto !important; background-repeat: no-repeat !important; background-position: center center !important;
+                opacity: 0.08 !important; z-index: -99999 !important; pointer-events: none; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
             }
-
-            /* 2. وضع طباعة كروت المشتركين الذكية (ID) */
-            body.print-card-mode * { 
-                visibility: hidden !important; 
+            .batch-page {
+                display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+                height: 100vh; width: 100%; page-break-after: always; box-sizing: border-box; padding: 10mm 0;
             }
-            body.print-card-mode #print-area-target, 
-            body.print-card-mode #print-area-target * { 
-                visibility: visible !important; 
+            .batch-pair {
+                display: flex; justify-content: center; gap: 15px; width: 100%;
             }
-            body.print-card-mode #print-area-target { 
-                position: absolute !important; 
-                top: 0 !important; 
-                left: 0 !important; 
-                width: 100% !important; 
-                display: block !important;
-            }
-            body.print-card-mode .no-print,
-            body.print-card-mode .class-no-print {
-                display: none !important;
-                visibility: hidden !important;
+            .batch-pair .gym-member-card {
+                transform: scale(0.92); /* تقليص الحجم قليلاً لضمان تناسق 4 أزواج في صفحة A4 */
+                transform-origin: center;
+                margin: -5px 0; /* تقليل المسافات العمودية للتعويض عن التقليص */
             }
         }
     </style>
 </head>
 <body>
+
+    <div id="splash-screen">
+        <div class="splash-logo-container">
+            <img src="file_0000000089e8722fa036f9f292888010.png" alt="Power Gym Logo">
+        </div>
+        <h1 class="splash-title">POWER GYM</h1>
+        <p class="splash-subtitle">نظام الإدارة الشامل والتحقق الذاتي الذكي</p>
+        <div class="splash-loader"></div>
+    </div>
 
     <div id="success-trophy-overlay" class="trophy-overlay">
         <div class="trophy-content">
@@ -926,7 +323,7 @@
     <div id="login-screen">
         <div class="login-card">
             <div class="login-logo">
-                <img src="image_0.png" alt="Power Gym Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                <img src="file_0000000089e8722fa036f9f292888010.png" alt="Power Gym Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
             </div>
             <h2 class="login-title">نظام Power Gym الذكي</h2>
             <p class="login-subtitle">نظام الإدارة الشامل والتحقق الذاتي الذكي</p>
@@ -951,7 +348,7 @@
         <header>
             <div class="brand-section">
                 <div class="app-logo">
-                    <img src="image_0.png" alt="Power Gym Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                    <img src="file_0000000089e8722fa036f9f292888010.png" alt="Power Gym Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
                 </div>
                 <div class="brand-name">
                     <h1>نظام Power Gym الذكي</h1>
@@ -1117,6 +514,7 @@
                             <button class="btn btn-secondary" onclick="resetMembersFilter()">❌ تصفية البحث</button>
                             <button class="btn btn-primary" onclick="openMemberModal()">➕ تسجيل مشترك جديد</button>
                             <button class="btn btn-info" onclick="printDataSection(true)">🖨️ طباعة كشف المشتركين</button>
+                            <button class="btn btn-warning" onclick="printAllCards()">🪪 طباعة كل الكروت (PDF)</button>
                         </div>
                     </div>
 
@@ -1251,7 +649,7 @@
 
                 <div class="form-group">
                     <label>الاسم الثلاثي للمشترك الكابتن *</label>
-                    <input type="text" id="m-name" class="input-control" placeholder="مثال: محمود بدير">
+                    <input type="text" id="m-name" class="input-control" placeholder="مثال: المبرمج محمود بدير">
                 </div>
                 
                 <div class="grid-2">
@@ -1392,6 +790,7 @@
             </div>
             <div class="modal-footer class-no-print">
                 <button class="btn btn-secondary no-print" onclick="closeModal('qr-card-modal')">إغلاق</button>
+                <button class="btn btn-whatsapp no-print" onclick="sendGroupInviteViaWhatsApp()">💬 دعوة للجروب</button>
                 <button class="btn btn-whatsapp no-print" onclick="sendCardViaWhatsApp()">📲 إرسال للواتساب</button>
                 <button class="btn btn-success no-print" onclick="printSmartCard()">🖨️ طباعة الكروت</button>
             </div>
@@ -1423,6 +822,8 @@
             </div>
         </div>
     </div>
+
+    <div id="batch-print-container" style="display:none;"></div>
 
     <audio id="beep-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
     <audio id="beep-daily" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
@@ -1562,7 +963,7 @@
         // --- تأثير التنبيه الضوئي للفلاش ---
         function triggerScreenFlash(type) {
             document.body.classList.remove('screen-flash-success', 'screen-flash-error');
-            void document.body.offsetWidth; // Trigger reflow لتفعيل التأثير مجدداً
+            void document.body.offsetWidth; 
             if (type === 'success') {
                 document.body.classList.add('screen-flash-success');
             } else if (type === 'error') {
@@ -1579,7 +980,7 @@
                 overlay.classList.add('show');
                 setTimeout(() => {
                     overlay.classList.remove('show');
-                }, 1500); // تختفي الشاشة بعد ثانية ونصف
+                }, 1500);
             }
         }
 
@@ -1688,7 +1089,7 @@
         }
 
         function switchView(viewId) {
-            playAppSound('beep-click'); // تنبيه صوتي لكل فعل تنقل
+            playAppSound('beep-click');
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
 
@@ -1890,7 +1291,7 @@
                 
                 playAppSound('beep-success'); 
                 triggerScreenFlash('success');
-                showTrophySuccess('تم تسجيل المشترك بنجاح!'); // كأس البطولة للمشترك الجديد
+                showTrophySuccess('تم تسجيل المشترك بنجاح!'); 
             }
 
             closeModal('member-modal');
@@ -1901,7 +1302,7 @@
             if (confirm(`هل أنت متأكد من حذف المشترك صاحب الكود [${code}] نهائياً؟`)) {
                 gymState.members = gymState.members.filter(x => x.code != code);
                 playAppSound('beep-delete'); 
-                triggerScreenFlash('error'); // وميض أحمر يعبر عن الحذف
+                triggerScreenFlash('error'); 
                 refreshSystemCore();
             }
         }
@@ -1933,6 +1334,7 @@
                         </td>
                         <td class="no-print">
                             <div class="btn-group">
+                                <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px;" onclick="sendGroupInviteViaWhatsApp(${m.code})" title="إرسال رابط الجروب للمشتركة">💬 دعوة للجروب</button>
                                 <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="openQrCard(${m.code})" title="عرض الكروت (دخول + تفعيل)">🪪 الكروت</button>
                                 <button class="btn btn-primary" style="padding:4px 8px; font-size:12px;" onclick="openMemberModal(${m.code})">✏️ تعديل</button>
                                 <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteMemberByCode(${m.code})">🗑️ حذف</button>
@@ -2001,6 +1403,27 @@
             document.getElementById('qr-card-modal').classList.add('active');
         }
 
+        // --- وظيفة إرسال دعوة جروب الواتساب المباشرة ---
+        window.sendGroupInviteViaWhatsApp = function(memberCode) {
+            playAppSound('beep-click');
+            const code = memberCode || document.getElementById('current-qr-member-code').value;
+            const m = gymState.members.find(x => x.code == code);
+            if(!m) return;
+
+            let phoneStr = m.phone.replace(/\D/g, ''); 
+            if (phoneStr.startsWith('0')) {
+                phoneStr = '20' + phoneStr.substring(1);
+            } else if (!phoneStr.startsWith('20')) {
+                phoneStr = '20' + phoneStr;
+            }
+
+            const message = `أهلاً بكِ كابتن [ ${m.name} ] ⚡\n\nندعوكِ للانضمام لجروب الواتساب الخاص بالمشتركات لمتابعة أحدث الأخبار والتمارين مع الكابتن:\n\n🔗 رابط الانضمام للجروب:\nhttps://chat.whatsapp.com/H6DYCDxDGaxEPlrm8gkJ2d`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${phoneStr}?text=${encodedMessage}`;
+            window.open(waUrl, '_blank');
+        }
+
         function sendCardViaWhatsApp() {
             playAppSound('beep-click');
             const memberCode = document.getElementById('current-qr-member-code').value;
@@ -2017,7 +1440,8 @@
             const qrDailyUrl = `https://quickchart.io/qr?text=${m.code}&size=250&dark=0f172a`;
             const qrActivationUrl = `https://quickchart.io/qr?text=PG-${m.code}&size=250&dark=ff3333`;
 
-            const message = `أهلاً بك كابتن [ ${m.name} ] في صالة Power Gym ⚡\n\nتم تسجيل اشتراكك واصدار كروتك بنجاح 🥳\nنوع الباقة: ${m.plan}\nالكود الخاص بك: ${m.code}\nتاريخ النهاية: ${m.endDate}\n\n1️⃣ للدخول اليومي للصالة، استخدمي باركود الحضور من هنا:\n${qrDailyUrl}\n\n2️⃣ كود تفعيل الاشتراك الخاص بك للإدارة:\n${qrActivationUrl}\n\nنتمنى لكِ تمريناً ممتعاً! 💪`;
+            // تم إضافة رابط الجروب للرسالة الترحيبية أيضاً
+            const message = `أهلاً بك كابتن [ ${m.name} ] في صالة Power Gym ⚡\n\nتم تسجيل اشتراكك واصدار كروتك بنجاح 🥳\nنوع الباقة: ${m.plan}\nالكود الخاص بك: ${m.code}\nتاريخ النهاية: ${m.endDate}\n\n1️⃣ للدخول اليومي للصالة، استخدمي باركود الحضور من هنا:\n${qrDailyUrl}\n\n2️⃣ كود تفعيل الاشتراك الخاص بك للإدارة:\n${qrActivationUrl}\n\n📌 للانضمام لجروب الواتساب الخاص بالمشتركات:\nhttps://chat.whatsapp.com/H6DYCDxDGaxEPlrm8gkJ2d\n\nنتمنى لكِ تمريناً ممتعاً! 💪`;
 
             const encodedMessage = encodeURIComponent(message);
             const waUrl = `https://wa.me/${phoneStr}?text=${encodedMessage}`;
@@ -2029,6 +1453,98 @@
             document.body.classList.add('print-card-mode');
             window.print();
             setTimeout(() => { document.body.classList.remove('print-card-mode'); }, 500);
+        }
+
+        function printAllCards() {
+            playAppSound('beep-click');
+            
+            if (gymState.members.length === 0) {
+                playAppSound('beep-error');
+                triggerScreenFlash('error');
+                alert("لا يوجد مشتركون لطباعة كروت لهم!");
+                return;
+            }
+
+            const container = document.getElementById('batch-print-container');
+            container.innerHTML = '';
+            container.style.display = 'block';
+
+            const chunkSize = 4;
+            const members = [...gymState.members];
+
+            for (let i = 0; i < members.length; i += chunkSize) {
+                const chunk = members.slice(i, i + chunkSize);
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'batch-page';
+
+                chunk.forEach(m => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const isExpired = m.endDate < todayStr;
+                    const borderColor = isExpired ? 'var(--danger-red)' : 'var(--primary-blue)';
+
+                    const pairDiv = document.createElement('div');
+                    pairDiv.className = 'batch-pair';
+                    pairDiv.innerHTML = `
+                        <div class="gym-member-card" style="border: 2px solid ${borderColor};">
+                            <div class="card-left">
+                                <div class="card-logo">⚡ POWER GYM</div>
+                                <div>
+                                    <div class="card-member-name">${m.name}</div>
+                                    <div class="card-member-code">ID: ${m.code}</div>
+                                </div>
+                                <div class="card-details-row">
+                                    <span style="color:#22c55e; font-weight:bold;">كارت الدخول اليومي</span><br>
+                                    <span>الباقة: ${m.plan}</span>
+                                </div>
+                            </div>
+                            <div class="card-right">
+                                <div class="card-qr-holder" id="batch-daily-qr-${m.code}"></div>
+                            </div>
+                            <div class="card-bg-decoration"></div>
+                        </div>
+
+                        <div class="gym-member-card activation-card">
+                            <div class="card-left">
+                                <div class="card-logo">⚡ POWER GYM</div>
+                                <div>
+                                    <div class="card-member-name">${m.name}</div>
+                                    <div class="card-member-code" style="color: #ff3333;">ID: PG-${m.code}</div>
+                                </div>
+                                <div class="card-details-row">
+                                    <span style="color:#ff3333; font-weight:bold;">👑 تفعيل الاشتراك الشهري</span><br>
+                                    <span>يُمسح للتجديد ودفع الإيراد فقط</span>
+                                </div>
+                            </div>
+                            <div class="card-right">
+                                <div class="card-qr-holder" style="border: 2px dashed #ff3333;" id="batch-activation-qr-${m.code}"></div>
+                            </div>
+                            <div class="card-bg-decoration" style="background: rgba(225, 29, 72, 0.1);"></div>
+                        </div>
+                    `;
+                    pageDiv.appendChild(pairDiv);
+                });
+                container.appendChild(pageDiv);
+
+                chunk.forEach(m => {
+                    new QRCode(document.getElementById(`batch-daily-qr-${m.code}`), {
+                        text: String(m.code), width: 80, height: 80,
+                        colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+                    });
+                    new QRCode(document.getElementById(`batch-activation-qr-${m.code}`), {
+                        text: `PG-${m.code}`, width: 80, height: 80,
+                        colorDark: "#ff3333", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+                    });
+                });
+            }
+
+            document.body.classList.add('print-all-cards-mode');
+            window.print();
+
+            setTimeout(() => { 
+                document.body.classList.remove('print-all-cards-mode'); 
+                container.style.display = 'none';
+                container.innerHTML = ''; 
+            }, 500);
         }
 
         function printDataSection(hideActions = false) {
@@ -2087,21 +1603,18 @@
 
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
+            const currentMonth = today.toISOString().slice(0, 7);
 
-            if (member.lastActivationDate) {
-                const lastActiveDate = new Date(member.lastActivationDate);
-                const timeDiff = Math.abs(today - lastActiveDate);
-                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-                if (daysDiff < 25) {
-                    playAppSound('beep-error'); 
-                    triggerScreenFlash('error');
-                    alert(`🚫 حماية الاشتراك:\nالمشتركة [ ${member.name} ] قامت بتفعيل اشتراكها الشهري بالفعل لهذه الدورة بتاريخ: ${member.lastActivationDate}.\nلا يمكن إعادة استخدام كود التفعيل الشهري (PG) حالياً وتكرار الإيراد المالي.`);
-                    return;
-                }
+            if (member.lastActivationMonth === currentMonth) {
+                playAppSound('beep-error'); 
+                triggerScreenFlash('error');
+                alert(`🚫 حماية الاشتراك:\nالمشتركة [ ${member.name} ] قامت بتفعيل اشتراكها بالفعل في هذا الشهر (${currentMonth}).\nلا يمكن تفعيل الاشتراك أكثر من مرة في نفس الشهر.`);
+                return;
             }
 
+            member.lastActivationMonth = currentMonth;
             member.lastActivationDate = todayStr;
+            
             const futureExpiry = new Date();
             futureExpiry.setDate(today.getDate() + 30);
             member.endDate = futureExpiry.toISOString().split('T')[0]; 
@@ -2115,7 +1628,7 @@
 
             playAppSound('beep-activation'); 
             triggerScreenFlash('success');
-            showTrophySuccess(`تم التفعيل لـ ${member.name}`); // تأثير الكأس
+            showTrophySuccess(`تم التفعيل لـ ${member.name}`); 
 
             alert(`🎉 تم تفعيل الاشتراك بنجاح للمشتركة: ${member.name}\nالصلاحية الجديدة حتى: ${member.endDate}\n💰 تم ترحيل مبلغ ${member.price} ج.م للخزينة.`);
             
@@ -2166,7 +1679,7 @@
             } else {
                 playAppSound('beep-daily'); 
                 triggerScreenFlash('success');
-                showTrophySuccess('حضور موفق! 🏆'); // شاشة الكأس المنبثقة
+                showTrophySuccess('حضور موفق! 🏆'); 
                 if(feedbackBox) feedbackBox.innerHTML = `<span style="color:var(--success-green)">✅ تم رصد الحضور بنجاح للمشترك: ${m.name}</span>`;
             }
 
@@ -2250,7 +1763,6 @@
 
             html5QrScannerInstance = new Html5Qrcode("qr-reader");
             
-            // إعدادات الكاميرا محسنة لثبات أعلى (fps: 10)
             html5QrScannerInstance.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
@@ -2398,7 +1910,6 @@
             }
         }
 
-        // --- تسجيل وتهيئة الـ Service Worker لضمان استمرار الـ PWA ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
@@ -2409,6 +1920,18 @@
                 });
             });
         }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if(splash) {
+                    splash.classList.add('splash-hidden');
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                    }, 800);
+                }
+            }, 2500); 
+        });
     </script>
 </body>
 </html>
