@@ -180,7 +180,7 @@
         .panel-block { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
         .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .panel-title { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; border: 1px solid transparent; outline: none; white-space: nowrap; }
         .btn-primary { background-color: var(--primary-blue); color: #fff; box-shadow: var(--neon-glow); }
         .btn-primary:hover { opacity: 0.9; }
@@ -510,10 +510,21 @@
                     <div class="panel-header">
                         <h2 class="panel-title">👥 كشف سجل المشتركين العام بالصالة الرياضية</h2>
                         <div class="btn-group">
-                            <input type="text" id="member-search-input" class="input-control" placeholder="ابحث باسم المشترك أو الهاتف أو الكود..." style="width: 250px; padding: 8px 12px; font-size: 13px;" oninput="filterMembersTable()">
+                            <input type="text" id="member-search-input" class="input-control" placeholder="ابحث باسم المشترك أو الهاتف أو الكود..." style="width: 200px; padding: 8px 12px; font-size: 13px;" oninput="filterMembersTable()">
+                            
+                            <select id="filter-member-status" class="input-control" style="width: 150px; padding: 8px 12px; font-size: 13px;" onchange="filterMembersTable()">
+                                <option value="all">كل المشتركات</option>
+                                <option value="active">ساريات (نشط)</option>
+                                <option value="expired">منتهيات العقد</option>
+                                <option value="interrupted">منقطعات (> 60 يوم)</option>
+                            </select>
+
                             <button class="btn btn-secondary" onclick="resetMembersFilter()">❌ تصفية البحث</button>
                             <button class="btn btn-primary" onclick="openMemberModal()">➕ تسجيل مشترك جديد</button>
-                            <button class="btn btn-info" onclick="printDataSection(true)">🖨️ طباعة كشف المشتركين</button>
+                            
+                            <button class="btn btn-info" onclick="printFilteredMembers('active')">🖨️ الساريين</button>
+                            <button class="btn btn-danger" onclick="printFilteredMembers('expired')">🖨️ المنتهين</button>
+                            
                             <button class="btn btn-warning" onclick="printAllCards()">🪪 طباعة كل الكروت (PDF)</button>
                         </div>
                     </div>
@@ -529,7 +540,7 @@
                                     <th>نوع العضوية / الباقة</th>
                                     <th>الاشتراك الفعلي والمدة</th>
                                     <th>تاريخ الانتهاء</th>
-                                    <th>حالة الصلاحية</th>
+                                    <th>حالة العقد والعد التنازلي</th>
                                     <th class="no-print">إجراءات التحكم</th>
                                 </tr>
                             </thead>
@@ -610,7 +621,12 @@
                     <div class="panel-header">
                         <h2 class="panel-title">💰 تقرير الدفاتر والحسابات المالية والتدفقات الصافية</h2>
                         <div class="btn-group">
-                            <input type="text" id="finance-search-input" class="input-control" placeholder="ابحث في البنود والبيانات المالية..." style="width: 250px; padding: 8px 12px; font-size: 13px;" oninput="renderRecentTransactions()">
+                            <input type="text" id="finance-search-input" class="input-control" placeholder="ابحث في البنود والبيانات المالية..." style="width: 200px; padding: 8px 12px; font-size: 13px;" oninput="renderRecentTransactions()">
+                            
+                            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" id="exclude-zero-finance" onchange="renderRecentTransactions()" style="width:16px; height:16px;"> استثناء 0 ج.م
+                            </label>
+
                             <button class="btn btn-success" onclick="openFinanceModal('income')">💵 تحصيل قيد إيراد</button>
                             <button class="btn btn-danger" onclick="openFinanceModal('expense')">💸 إدراج بند مصروفات</button>
                             <button class="btn btn-info" onclick="printDataSection(true)">🖨️ طباعة تقرير مالي</button>
@@ -1307,18 +1323,50 @@
             }
         }
 
+        // [إضافة 1, 2, 3 و 6]: فلاتر ذكية والعد التنازلي مع زر التجديد السريع
         function filterMembersTable() {
             const searchVal = document.getElementById('member-search-input').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('filter-member-status').value;
             const tbody = document.getElementById('members-table-rows');
             if(!tbody) return;
             tbody.innerHTML = '';
 
             const todayStr = new Date().toISOString().split('T')[0];
+            const today = new Date(todayStr);
             const reversedMembers = [...gymState.members].reverse();
 
             reversedMembers.forEach(m => {
-                if (m.name.toLowerCase().includes(searchVal) || m.phone.includes(searchVal) || String(m.code).includes(searchVal)) {
-                    const isExpired = m.endDate < todayStr;
+                const end = new Date(m.endDate);
+                const diffTime = end - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let computedStatus = 'active';
+                if (diffDays < 0) {
+                    computedStatus = (diffDays <= -60) ? 'interrupted' : 'expired';
+                }
+
+                const matchSearch = m.name.toLowerCase().includes(searchVal) || m.phone.includes(searchVal) || String(m.code).includes(searchVal);
+                const matchStatus = (statusFilter === 'all') || (statusFilter === computedStatus);
+
+                if (matchSearch && matchStatus) {
+                    
+                    let statusBadge = `<span class="badge badge-success">سارية</span>`;
+                    let countdownText = `<span style="color:var(--success-green); font-weight:700; font-size:12px;">⏳ متبقي ${diffDays} يوم</span>`;
+
+                    if (computedStatus === 'expired') {
+                        statusBadge = `<span class="badge badge-danger">منتهية</span>`;
+                        countdownText = `<span style="color:var(--danger-red); font-weight:700; font-size:12px;">⚠️ منتهي منذ ${Math.abs(diffDays)} يوم</span>`;
+                    } else if (computedStatus === 'interrupted') {
+                        statusBadge = `<span class="badge badge-warning" style="background:#fef3c7; color:#d97706;">منقطعة</span>`;
+                        countdownText = `<span style="color:#d97706; font-weight:700; font-size:12px;">❌ منقطعة منذ ${Math.abs(diffDays)} يوم</span>`;
+                    }
+
+                    // ميزة التجديد السريع بنقرة زر 
+                    let quickRenewBtn = "";
+                    if (computedStatus !== 'active') {
+                        quickRenewBtn = `<button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="quickRenewContract(${m.code})" title="تجديد سريع لشهر إضافي">🔄 تجديد سريع</button>`;
+                    }
+
                     const tr = document.createElement('tr');
 
                     tr.innerHTML = `
@@ -1330,12 +1378,16 @@
                         <td>${m.startDate}</td>
                         <td>${m.endDate}</td>
                         <td>
-                            ${isExpired ? '<span class="badge badge-danger">🔴 منتهي العقد</span>' : '<span class="badge badge-success">🟢 نشط وصالح</span>'}
+                            <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                                ${statusBadge}
+                                ${countdownText}
+                            </div>
                         </td>
                         <td class="no-print">
                             <div class="btn-group">
-                                <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px;" onclick="sendGroupInviteViaWhatsApp(${m.code})" title="إرسال رابط الجروب للمشتركة">💬 دعوة للجروب</button>
-                                <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="openQrCard(${m.code})" title="عرض الكروت (دخول + تفعيل)">🪪 الكروت</button>
+                                ${quickRenewBtn}
+                                <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px;" onclick="sendGroupInviteViaWhatsApp(${m.code})" title="إرسال رابط الجروب للمشتركة">💬 جروب</button>
+                                <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="openQrCard(${m.code})" title="عرض الكروت (دخول + تفعيل)">🪪 كروت</button>
                                 <button class="btn btn-primary" style="padding:4px 8px; font-size:12px;" onclick="openMemberModal(${m.code})">✏️ تعديل</button>
                                 <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteMemberByCode(${m.code})">🗑️ حذف</button>
                             </div>
@@ -1350,10 +1402,54 @@
             }
         }
 
+        // [إضافة 6]: دالة التجديد السريع للمشترك بضغطة واحدة
+        window.quickRenewContract = function(code) {
+            playAppSound('beep-click');
+            const m = gymState.members.find(x => x.code == code);
+            if (!m) return;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            let baseStart = m.endDate < todayStr ? todayStr : m.endDate;
+
+            let d = new Date(baseStart);
+            d.setDate(d.getDate() + 30); 
+            let computedEnd = d.toISOString().split('T')[0];
+
+            m.startDate = baseStart;
+            m.endDate = computedEnd;
+
+            gymState.transactions.push({
+                date: todayStr,
+                type: 'إيراد',
+                desc: `تجديد سريع للاشتراك: ${m.name} (كود: ${m.code}) - باقة: ${m.plan}`,
+                amount: m.price || 0
+            });
+
+            playAppSound('beep-success');
+            triggerScreenFlash('success');
+            showTrophySuccess(`تم التجديد السريع لـ ${m.name}`);
+            refreshSystemCore();
+        }
+
         function resetMembersFilter() {
             playAppSound('beep-click');
             document.getElementById('member-search-input').value = '';
+            document.getElementById('filter-member-status').value = 'all';
             filterMembersTable();
+        }
+
+        // [إضافة 4]: دالة تمكين طباعة أي قسم محدد فقط
+        window.printFilteredMembers = function(statusType) {
+            playAppSound('beep-click');
+            document.getElementById('filter-member-status').value = statusType;
+            filterMembersTable();
+            setTimeout(() => {
+                printDataSection(true);
+                setTimeout(() => {
+                    document.getElementById('filter-member-status').value = 'all';
+                    filterMembersTable();
+                }, 500);
+            }, 300);
         }
 
         function openQrCard(memberCode) {
@@ -1856,8 +1952,11 @@
             }
         }
 
+        // [إضافة 5]: دالة استعراض الأموال المتقدمة وتضمين إخفاء 0 جنيه
         function renderRecentTransactions() {
             const searchVal = document.getElementById('finance-search-input') ? document.getElementById('finance-search-input').value.toLowerCase().trim() : '';
+            const excludeZero = document.getElementById('exclude-zero-finance') ? document.getElementById('exclude-zero-finance').checked : false;
+            
             const dashboardTbody = document.getElementById('recent-transactions-rows');
             const financeTbody = document.getElementById('finance-table-rows');
 
@@ -1869,6 +1968,11 @@
             sortedTransactions.forEach((t, index) => {
                 const trueIndex = gymState.transactions.length - 1 - index;
                 
+                // منع ظهور السندات الصفرية إذا تم تفعيل الفلتر
+                if (excludeZero && parseFloat(t.amount || 0) === 0) {
+                    return; 
+                }
+
                 if(t.desc.toLowerCase().includes(searchVal) || String(t.amount).includes(searchVal)) {
                     if (dashboardTbody && dashboardTbody.children.length < 5) {
                         const trDash = document.createElement('tr');
