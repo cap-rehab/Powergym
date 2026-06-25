@@ -236,73 +236,145 @@
         .card-bg-decoration { position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(2, 132, 199, 0.1); border-radius: 50%; filter: blur(20px); z-index: 1; }
         .activation-card .card-bg-decoration { background: rgba(225, 29, 72, 0.1); }
 
-        /* --- نظام الطباعة والتقارير المطور والذكي --- */
+        /* --- تصميمات خاصة بتبويب سجل المدفوعات --- */
+        .pay-month-bar { background: linear-gradient(145deg, #1e1e5a, #2a2a7a); border-radius: 16px; padding: 18px 22px; margin-bottom: 18px; border: 2px solid #d4a843; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+        .pay-month-bar label { color: #d4a843; font-weight: 700; font-size: 15px; white-space: nowrap; }
+        .pay-month-bar input[type="month"] { padding: 9px 14px; border: 2px solid #3a3a8a; border-radius: 10px; background: rgba(255, 255, 255, 0.07); color: #fff; font-family: 'Tajawal', sans-serif; font-size: 14px; outline: none; cursor: pointer; }
+        .pay-month-bar input[type="month"]:focus { border-color: #d4a843; }
+        .pay-stats-row { display: flex; gap: 12px; margin-right: auto; flex-wrap: wrap; }
+        .pay-stat-pill { background: rgba(212, 168, 67, 0.15); border: 1px solid rgba(212, 168, 67, 0.4); border-radius: 10px; padding: 9px 16px; text-align: center; }
+        .pay-stat-pill .num { color: #d4a843; font-size: 20px; font-weight: 900; display: block; }
+        .pay-stat-pill .lbl { color: #b8c6db; font-size: 11px; }
+        .pay-table-section { background: linear-gradient(145deg, #1e1e5a, #2a2a7a); border-radius: 16px; padding: 22px; border: 2px solid #d4a843; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); overflow-x: auto; color: #fff; }
+        .pay-table-title { color: #d4a843; font-size: 19px; font-weight: 900; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid rgba(212, 168, 67, 0.3); text-align: center; }
+        .pay-legend { display: flex; gap: 15px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+        .pay-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #b8c6db; }
+        .pay-table-section table { width: 100%; border-collapse: collapse; min-width: 680px; }
+        .pay-table-section thead th { background: linear-gradient(135deg, #d4a843, #f0c060); color: #1a1a4e; padding: 12px 9px; font-weight: 900; font-size: 13px; text-align: center; border: 1px solid #b8922e; white-space: nowrap; }
+        .pay-table-section tbody tr { transition: background 0.2s; }
+        .pay-table-section tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+        .pay-table-section tbody tr:hover { background: rgba(212, 168, 67, 0.08); }
+        .pay-table-section tbody td { padding: 7px 9px; text-align: center; border: 1px solid rgba(58, 58, 138, 0.5); font-size: 13px; color: #e0e0e0; vertical-align: middle; }
+        .pay-row-num { color: #d4a843; font-weight: 700; width: 38px; }
+        .pay-name-cell { text-align: right; padding-right: 14px !important; font-weight: 600; color: #fff; min-width: 160px; }
+        .pay-date-cell { color: #b8c6db; font-size: 12px; }
+        .pay-expired-row { background: rgba(192, 57, 43, 0.08) !important; }
+        .pay-expired-row:hover { background: rgba(192, 57, 43, 0.14) !important; }
+        .pay-expired-badge { background: rgba(192, 57, 43, 0.3); color: #e74c3c; border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+        .pay-active-badge { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+        .pay-expiring-badge { background: rgba(243, 156, 18, 0.25); color: #f39c12; border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+        .pay-amount-wrap { display: flex; align-items: center; gap: 5px; justify-content: center; }
+        .pay-amount-input { width: 82px; padding: 6px 7px; border: 2px solid #3a3a8a; border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; text-align: center; outline: none; transition: all 0.2s; }
+        .pay-amount-input:focus { border-color: #d4a843; background: rgba(212, 168, 67, 0.1); box-shadow: 0 0 10px rgba(212, 168, 67, 0.25); }
+        .pay-amount-input.paid { border-color: #2ecc71; color: #2ecc71; background: rgba(46, 204, 113, 0.08); }
+        .pay-currency { color: #888; font-size: 12px; }
+        .pay-status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: #444; }
+        .pay-status-dot.paid { background: #2ecc71; }
+        .pay-table-section tfoot td { padding: 12px 9px; font-weight: 900; font-size: 15px; background: rgba(212, 168, 67, 0.12); color: #d4a843; border: 2px solid rgba(212, 168, 67, 0.4); text-align: center; }
+        .pay-toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) translateY(20px); background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; padding: 11px 26px; border-radius: 12px; font-weight: 700; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.35s ease; z-index: 9999; }
+        .pay-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* --- نظام الطباعة والتقارير المطور والذكي الجديد كلياً --- */
         @media print {
             @page { size: auto; margin: 15mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-            /* 1. وضع طباعة التقارير والجداول المخصصة لبيانات الشاشة الحالية */
-            body.print-section-mode header,
-            body.print-section-mode nav,
-            body.print-section-mode .no-print,
-            body.print-section-mode button,
-            body.print-section-mode input,
-            body.print-section-mode select,
-            body.print-section-mode textarea,
-            body.print-section-mode .btn-group,
-            body.print-section-mode .panel-header > div:not(.panel-title),
-            body.print-section-mode .modal-overlay,
-            body.print-section-mode #login-screen { display: none !important; }
-            body.print-section-mode #app-container { display: block !important; background: transparent !important; }
-            body.print-section-mode main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
-            body.print-section-mode .view-section { display: none !important; }
-            body.print-section-mode .view-section.active { display: block !important; position: relative !important; width: 100% !important; }
-            body.print-section-mode::before {
-                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;
-                background-image: url('file_0000000089e8722fa036f9f292888010.png') !important; background-size: 380px auto !important; background-repeat: no-repeat !important; background-position: center center !important;
-                opacity: 0.08 !important; z-index: -99999 !important; pointer-events: none;
+            /* 1. إخفاء كل الواجهة التفاعلية إجبارياً في كل حالات الطباعة (حتى عبر Ctrl+P) */
+            header, nav, .main-nav, .btn-group, .actions-bar, button, .btn, 
+            .pay-month-bar, .pay-legend, .pay-toast, .stats-grid, .modal-overlay,
+            #splash-screen, #login-screen, .no-print {
+                display: none !important;
             }
-            body.print-section-mode .panel-block { border: 1px solid #cbd5e1 !important; box-shadow: none !important; margin-bottom: 25px !important; padding: 15px !important; background: #ffffff !important; page-break-inside: avoid; }
-            body.print-section-mode .panel-title { justify-content: center !important; font-size: 22px !important; font-weight: 900 !important; border-bottom: 2px solid #0f172a !important; padding-bottom: 10px !important; margin-bottom: 20px !important; display: flex !important; color: #0f172a !important; }
-            body.print-section-mode table { border: 1px solid #94a3b8 !important; width: 100% !important; border-collapse: collapse !important; margin-top: 15px !important; }
-            body.print-section-mode th { border: 1px solid #94a3b8 !important; padding: 10px !important; color: #0f172a !important; background-color: #f1f5f9 !important; font-weight: bold !important; text-align: center !important; }
-            body.print-section-mode td { border: 1px solid #cbd5e1 !important; padding: 10px !important; color: #000000 !important; background: transparent !important; text-align: center !important; }
-            body.hide-actions-col th:last-child, body.hide-actions-col td:last-child, body.hide-actions-col .no-print { display: none !important; }
 
-            /* 2. وضع طباعة كروت المشتركين الفردية (ID) */
+            /* 2. تنظيف الشاشة وضبط هيكل العرض للجدول النشط فقط */
+            body:not(.print-card-mode):not(.print-all-cards-mode) #app-container { display: block !important; background: transparent !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+            
+            body:not(.print-card-mode):not(.print-all-cards-mode) .view-section { display: none !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .view-section.active { display: block !important; position: relative !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            
+            /* 3. إخفاء حقول الإدخال والبحث (باستثناء مبالغ الدفع لتحويلها لنص) */
+            body:not(.print-card-mode):not(.print-all-cards-mode) input:not(.pay-amount-input),
+            body:not(.print-card-mode):not(.print-all-cards-mode) select,
+            body:not(.print-card-mode):not(.print-all-cards-mode) textarea { display: none !important; }
+
+            body:not(.print-card-mode):not(.print-all-cards-mode) .panel-header > div:not(.panel-title) { display: none !important; }
+
+            /* 4. تصميم طباعة سجل المدفوعات الشهري (طباعة الجدول بحدود واضحة وبدون ألوان زاهية) */
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section {
+                background: transparent !important; border: none !important; box-shadow: none !important;
+                padding: 0 !important; margin: 0 !important; border-radius: 0 !important; color: #000 !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-title {
+                color: #1a1a4e !important; font-size: 20px !important; font-weight: 900 !important;
+                border-bottom: 3px double #1a1a4e !important; padding-bottom: 10px !important;
+                margin-bottom: 16px !important; text-align: center !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section table {
+                width: 100% !important; border-collapse: collapse !important; border: 2px solid #1a1a4e !important; font-size: 13px !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section thead th {
+                background: #f0c060 !important; color: #1a1a4e !important; border: 1px solid #1a1a4e !important;
+                padding: 7px 6px !important; font-size: 13px !important; font-weight: 900 !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section tbody td {
+                color: #000 !important; border: 1px solid #555 !important; padding: 5px 6px !important;
+                font-size: 12px !important; background: #fff !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section tfoot td {
+                background: #f5eedc !important; color: #1a1a4e !important; border: 1px solid #1a1a4e !important; font-size: 14px !important;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-name-cell { color: #000 !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-date-cell { color: #333 !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-row-num { color: #1a1a4e !important; }
+            
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-expired-badge { background: #fdd !important; color: #c0392b !important; border: 1px solid #c0392b !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-active-badge { background: #dfd !important; color: #1a7a3a !important; border: 1px solid #1a7a3a !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-expiring-badge { background: #ffeedd !important; color: #a0620a !important; border: 1px solid #a0620a !important; }
+            
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-status-dot { display: none !important; }
+            
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-amount-input {
+                background: transparent !important; border: none !important; color: #000 !important;
+                font-weight: 900 !important; width: auto !important; box-shadow: none !important;
+                padding: 0 !important; min-width: 40px; text-align: center;
+            }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-amount-input.paid { color: #1a7a3a !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-currency { color: #444 !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .pay-table-section tr { page-break-inside: avoid; }
+
+            /* 5. تصميم طباعة باقي جداول النظام الأصلي */
+            body:not(.print-card-mode):not(.print-all-cards-mode) .panel-block { border: 1px solid #cbd5e1 !important; box-shadow: none !important; margin-bottom: 25px !important; padding: 15px !important; background: #ffffff !important; page-break-inside: avoid; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) .panel-title { justify-content: center !important; font-size: 22px !important; font-weight: 900 !important; border-bottom: 2px solid #0f172a !important; padding-bottom: 10px !important; margin-bottom: 20px !important; display: flex !important; color: #0f172a !important; }
+            
+            body:not(.print-card-mode):not(.print-all-cards-mode) table:not(.pay-table-section table) { border: 1px solid #94a3b8 !important; width: 100% !important; border-collapse: collapse !important; margin-top: 15px !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) th:not(.pay-table-section th) { border: 1px solid #94a3b8 !important; padding: 10px !important; color: #0f172a !important; background-color: #f1f5f9 !important; font-weight: bold !important; text-align: center !important; }
+            body:not(.print-card-mode):not(.print-all-cards-mode) td:not(.pay-table-section td) { border: 1px solid #cbd5e1 !important; padding: 10px !important; color: #000000 !important; background: transparent !important; text-align: center !important; }
+            
+            body.hide-actions-col th:last-child, body.hide-actions-col td:last-child { display: none !important; }
+
+            /* 6. وضع طباعة كروت المشتركين الفردية (ID) */
             body.print-card-mode * { visibility: hidden !important; }
             body.print-card-mode #print-area-target, body.print-card-mode #print-area-target * { visibility: visible !important; }
             body.print-card-mode #print-area-target { position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; display: block !important; }
             body.print-card-mode .no-print, body.print-card-mode .class-no-print { display: none !important; visibility: hidden !important; }
 
-            /* 3. وضع طباعة كل الكروت دفعة واحدة مجمعة (PDF) */
+            /* 7. وضع طباعة كل الكروت دفعة واحدة مجمعة (PDF) */
             body.print-all-cards-mode * { visibility: hidden !important; }
             body.print-all-cards-mode #batch-print-container, 
             body.print-all-cards-mode #batch-print-container * { visibility: visible !important; }
             body.print-all-cards-mode #batch-print-container { 
                 position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; display: block !important; background: transparent !important;
             }
-            body.print-all-cards-mode::before {
-                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;
-                background-image: url('file_0000000089e8722fa036f9f292888010.png') !important; background-size: 380px auto !important; background-repeat: no-repeat !important; background-position: center center !important;
-                opacity: 0.08 !important; z-index: -99999 !important; pointer-events: none; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-            }
-            .batch-page {
-                display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
-                height: 100vh; width: 100%; page-break-after: always; box-sizing: border-box; padding: 10mm 0;
-            }
-            .batch-pair {
-                display: flex; justify-content: center; gap: 15px; width: 100%;
-            }
-            .batch-pair .gym-member-card {
-                transform: scale(0.92); /* تقليص الحجم قليلاً لضمان تناسق 4 أزواج في صفحة A4 */
-                transform-origin: center;
-                margin: -5px 0; /* تقليل المسافات العمودية للتعويض عن التقليص */
-            }
+            .batch-page { display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; height: 100vh; width: 100%; page-break-after: always; box-sizing: border-box; padding: 10mm 0; }
+            .batch-pair { display: flex; justify-content: center; gap: 15px; width: 100%; }
+            .batch-pair .gym-member-card { transform: scale(0.92); transform-origin: center; margin: -5px 0; }
         }
     </style>
 </head>
 <body>
+
+    <div class="pay-toast" id="pay-toast"></div>
 
     <div id="splash-screen">
         <div class="splash-logo-container">
@@ -372,6 +444,7 @@
         <nav class="main-nav">
             <div class="nav-link active" id="nav-dashboard" onclick="switchView('dashboard')">📊 لوحة التحكم الحية</div>
             <div class="nav-link" id="nav-members" onclick="switchView('members')">👥 إدارة الكابتن والمشتركين</div>
+            <div class="nav-link" id="nav-payments" onclick="switchView('payments')">💸 سجل المدفوعات الشهري</div>
             <div class="nav-link" id="nav-attendance" onclick="switchView('attendance')">📝 دفتر تسجيل الحضور اليومي</div>
             <div class="nav-link" id="nav-scanner" onclick="switchView('scanner')">📷 ماسح الكاميرا الذكي QR</div>
             <div class="nav-link" id="nav-finance" onclick="switchView('finance')">💰 خزينة النادي والحسابات</div>
@@ -551,6 +624,58 @@
                 </div>
             </section>
 
+            <section id="view-payments" class="view-section">
+                <div class="pay-month-bar no-print">
+                    <label>📅 الشهر:</label>
+                    <input type="month" id="payMonthPicker">
+                    <div class="pay-stats-row">
+                        <div class="pay-stat-pill"><span class="num" id="payPaidCount">0</span><span class="lbl">دفعت</span></div>
+                        <div class="pay-stat-pill"><span class="num" id="payUnpaidCount">0</span><span class="lbl">لم تدفع</span></div>
+                        <div class="pay-stat-pill"><span class="num" id="payTotalAmount">0.00</span><span class="lbl">إجمالي (جنيه)</span></div>
+                    </div>
+                </div>
+
+                <div class="actions-bar no-print" style="display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="openPayMemberModal()">➕ إضافة مشتركة جديدة</button>
+                    <button class="btn btn-info" onclick="exportPayCSV()">📤 تصدير CSV</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('pay-csv-input').click()">📥 استيراد CSV</button>
+                    <input type="file" id="pay-csv-input" accept=".csv" style="display: none;" onchange="importPayCSV(event)">
+                    
+                    <button class="btn btn-secondary" style="background: linear-gradient(135deg, #3a3a8a, #5a5aba); color: #fff;" onclick="resetAllPay()">🔄 مسح كل المبالغ للشهر</button>
+                    <button class="btn btn-success" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff;" onclick="printDataSection(true)">🖨️ طباعة السجل</button>
+                </div>
+
+                <div class="pay-table-section">
+                    <div class="pay-table-title" id="payTableTitle">📋 كشف اسماء المشتركات عن شهر</div>
+                    <div class="pay-legend no-print">
+                        <span class="pay-legend-item"><span class="pay-active-badge">نشط</span> اشتراك ساري</span>
+                        <span class="pay-legend-item"><span class="pay-expiring-badge">ينتهي قريباً</span> خلال 5 أيام</span>
+                        <span class="pay-legend-item"><span class="pay-expired-badge">منتهي</span> انتهى الاشتراك</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th style="text-align:right;padding-right:12px;">اسم المشتركة</th>
+                                <th>تاريخ الاشتراك</th>
+                                <th>تاريخ الانتهاء</th>
+                                <th>الحالة</th>
+                                <th>المبلغ المدفوع</th>
+                                <th class="no-print">✓</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payTableBody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" style="text-align:right;padding-right:15px;">الإجمالي العام:</td>
+                                <td id="payFootTotal">0.00 جنيه</td>
+                                <td class="no-print"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
             <section id="view-attendance" class="view-section">
                 <div class="panel-block">
                     <div class="panel-header">
@@ -652,6 +777,39 @@
             </section>
 
         </main>
+    </div>
+
+    <div class="modal-overlay" id="pay-member-modal">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ إضافة مشتركة جديدة لسجل المدفوعات</h3>
+                <button class="modal-close" onclick="closeModal('pay-member-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>الاسم الكامل للمشتركة *</label>
+                    <input type="text" id="pay-m-name" class="input-control" placeholder="اسم المشتركة">
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>تاريخ الاشتراك *</label>
+                        <input type="date" id="pay-m-sub" class="input-control" onchange="autoFillPayExpiry()">
+                    </div>
+                    <div class="form-group">
+                        <label>تاريخ الانتهاء *</label>
+                        <input type="date" id="pay-m-end" class="input-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>المبلغ المطلوب (ج.م) *</label>
+                    <input type="number" id="pay-m-price" class="input-control" placeholder="200" value="200">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('pay-member-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="savePayMemberData()">💾 حفظ في السجل</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="member-modal">
@@ -961,7 +1119,9 @@
             config: { nextCode: 1001, theme: 'light' },
             members: [],
             attendance: [],
-            transactions: []
+            transactions: [],
+            payMembers: [],    // مصفوفة حفظ مشتركات سجل المدفوعات
+            payRecords: {}     // سجل مبالغ المدفوعات مرتبط بالشهر
         };
 
         let html5QrScannerInstance = null;
@@ -976,7 +1136,6 @@
             }
         }
 
-        // --- تأثير التنبيه الضوئي للفلاش ---
         function triggerScreenFlash(type) {
             document.body.classList.remove('screen-flash-success', 'screen-flash-error');
             void document.body.offsetWidth; 
@@ -987,7 +1146,6 @@
             }
         }
 
-        // --- إظهار كأس البطولة (التأثير المرئي) ---
         function showTrophySuccess(customText = 'تم التسجيل بنجاح!') {
             const overlay = document.getElementById('success-trophy-overlay');
             const textElem = document.getElementById('trophy-custom-text');
@@ -1002,12 +1160,65 @@
 
         function canProcessScan() {
             const now = Date.now();
-            if (now - lastScanTimestamp < SCAN_COOLDOWN_MS) {
-                return false;
-            }
-            lastScanTimestamp = now;
-            return true;
+            if (now - lastScanTimestamp < SCAN_COOLDOWN_MS) { return false; }
+            lastScanTimestamp = now; return true;
         }
+
+        // ============================================================
+        //  تهيئة قائمة سجل المدفوعات الأولية (الـ 50 مشتركة)
+        // ============================================================
+        const DEFAULT_PAY_MEMBERS = [
+            { name: "ايمان شوقي", sub: "2026-06-22", end: "2026-07-21", price: 200 },
+            { name: "ناريمان عبد المنعم", sub: "2026-06-18", end: "2026-07-17", price: 200 },
+            { name: "اسماء محمد تمام", sub: "2026-06-18", end: "2026-07-17", price: 200 },
+            { name: "زينب حسن حسن", sub: "2026-06-15", end: "2026-07-14", price: 200 },
+            { name: "فاطمة خالد حسين", sub: "2026-06-17", end: "2026-07-16", price: 200 },
+            { name: "منه الله محمد جمال", sub: "2026-06-16", end: "2026-07-15", price: 200 },
+            { name: "نورهان سمير بسيوني", sub: "2026-06-16", end: "2026-07-15", price: 200 },
+            { name: "حلا أحمد حسن", sub: "2026-06-13", end: "2026-07-27", price: 100 },
+            { name: "بسمله فوزي", sub: "2026-06-13", end: "2026-07-12", price: 200 },
+            { name: "جني محمد الخولاني", sub: "2026-06-13", end: "2026-07-12", price: 200 },
+            { name: "سهير جمال الغزناوي", sub: "2026-06-13", end: "2026-07-12", price: 200 },
+            { name: "ريهام عبد الخالق", sub: "2026-06-13", end: "2026-07-12", price: 200 },
+            { name: "هبه مصطفي خلف", sub: "2026-06-08", end: "2026-07-07", price: 200 },
+            { name: "كارما عبد الفتاح", sub: "2026-06-08", end: "2026-07-07", price: 200 },
+            { name: "سماح حامد حامد", sub: "2026-06-08", end: "2026-07-07", price: 200 },
+            { name: "ماسة محمود سعد", sub: "2026-06-08", end: "2026-07-07", price: 200 },
+            { name: "امال محمد عبده", sub: "2026-06-07", end: "2026-07-06", price: 200 },
+            { name: "هبه محمد السيد", sub: "2026-06-07", end: "2026-07-06", price: 200 },
+            { name: "داليا ذكي جاد الله", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "ياسمين التابعي فؤاد", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "كريمه السيد جلال", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "ريتاج طارق الفراش", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "هيام طارق الفراش", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "حنان محمد عتمان", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "شرين الشناوي", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "مروة عادل الغزناوي", sub: "2026-06-03", end: "2026-07-02", price: 200 },
+            { name: "ايه إبراهيم نبيه", sub: "2026-06-06", end: "2026-07-05", price: 200 },
+            { name: "نور سامي فكري", sub: "2026-06-04", end: "2026-07-03", price: 200 },
+            { name: "نور خالد عبد الحليم", sub: "2026-06-04", end: "2026-07-03", price: 200 },
+            { name: "زينب جمال محمود", sub: "2026-06-04", end: "2026-07-03", price: 200 },
+            { name: "أميرة محمد حسن", sub: "2026-06-04", end: "2026-07-03", price: 200 },
+            { name: "حبيبة محمد عبد الرؤوف", sub: "2026-06-03", end: "2026-07-02", price: 200 },
+            { name: "ايمان طلعت السعيد", sub: "2026-06-03", end: "2026-07-02", price: 200 },
+            { name: "بانسية حسن بسام", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "دعاء السيد راشد", sub: "2026-06-03", end: "2026-07-02", price: 200 },
+            { name: "دعاء ناظم فتحي", sub: "2026-06-22", end: "2026-07-02", price: 200 },
+            { name: "لمياء ناظم فتحي", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "رحاب سمير الهلوتي", sub: "2026-06-03", end: "2026-07-02", price: 200 },
+            { name: "تقوي سامح عبد العال", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "حبيبة سامح عبد العال", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "كيريا مينا عياد", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "شيري عادل غطاس", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "نهلة عوض المنزلاوي", sub: "2026-06-05", end: "2026-07-04", price: 200 },
+            { name: "رانيا يوسف", sub: "2026-06-02", end: "2026-07-01", price: 200 },
+            { name: "حنان محمد السعيد", sub: "2026-06-05", end: "2026-07-04", price: 200 },
+            { name: "خديجه اسلام الشربيني", sub: "2026-06-04", end: "2026-06-04", price: 50 },
+            { name: "فريدة اسلام الشربيني", sub: "2026-06-04", end: "2026-06-04", price: 50 },
+            { name: "اسماء محمد عباس", sub: "2026-06-20", end: "2026-07-19", price: 200 },
+            { name: "سمر محمد السيد", sub: "2026-06-22", end: "2026-07-21", price: 200 },
+            { name: "ايه خلف هريدي", sub: "2026-06-23", end: "2026-07-22", price: 200 }
+        ];
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedState = localStorage.getItem('POWER_GYM_CORE_DATA');
@@ -1023,10 +1234,46 @@
                 }
             }
 
+            if (!gymState.payMembers) gymState.payMembers = [];
+            if (!gymState.payRecords) gymState.payRecords = {};
+
+            // --- 1. استعادة الـ 50 مشتركة في حال اختفائهم من التخزين المؤقت ---
+            const hasDefaultPay = gymState.payMembers.some(m => m.name === "ايمان شوقي");
+            if (!hasDefaultPay) {
+                // وضع الـ 50 مشتركة في بداية الجدول
+                gymState.payMembers = [...DEFAULT_PAY_MEMBERS, ...gymState.payMembers];
+                
+                // تصفير مدفوعاتهم حتى لا يحدث تداخل في الأشهر
+                for (let month in gymState.payRecords) {
+                    const zeros = new Array(DEFAULT_PAY_MEMBERS.length).fill(0);
+                    gymState.payRecords[month] = [...zeros, ...gymState.payRecords[month]];
+                }
+            }
+
+            // --- 2. إرسال المشتركات الـ 50 للدفتر الرئيسي إذا لم يكونوا هناك (للمزامنة) ---
+            const hasDefaultMain = gymState.members.some(m => m.name === "ايمان شوقي");
+            if (!hasDefaultMain) {
+                DEFAULT_PAY_MEMBERS.forEach(m => {
+                    gymState.members.push({
+                        code: gymState.config.nextCode++,
+                        name: m.name,
+                        phone: "01000000000",
+                        plan: "اشتراك شهري عادي",
+                        price: m.price,
+                        discount: "0",
+                        startDate: m.sub,
+                        endDate: m.end,
+                        healthStatus: "بصحة جيدة",
+                        healthNotes: ""
+                    });
+                });
+            }
+
             document.documentElement.setAttribute('data-theme', gymState.config.theme || 'light');
             document.getElementById('filter-attendance-date').value = new Date().toISOString().split('T')[0];
 
             refreshSystemCore(true);
+            buildPayTable(); 
             
             document.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
@@ -1114,6 +1361,9 @@
 
             if (viewId !== 'scanner') {
                 stopCameraEngine();
+            }
+            if (viewId === 'payments') {
+                if(typeof buildPayTable === 'function') buildPayTable();
             }
         }
 
@@ -1304,6 +1554,12 @@
                     desc: `اشتراك العضو: ${name} (كود: ${newCode}) - باقة: ${plan}` + (discount > 0 ? ` (شامل خصم ${discount}%)` : ``),
                     amount: price
                 });
+
+                // مزامنة مع سجل المدفوعات فوراً
+                gymState.payMembers.push({ name: name, sub: startDate, end: endDate, price: price });
+                for (let month in gymState.payRecords) {
+                    gymState.payRecords[month].push(0);
+                }
                 
                 playAppSound('beep-success'); 
                 triggerScreenFlash('success');
@@ -1323,7 +1579,6 @@
             }
         }
 
-        // [إضافة 1, 2, 3 و 6]: فلاتر ذكية والعد التنازلي مع زر التجديد السريع
         function filterMembersTable() {
             const searchVal = document.getElementById('member-search-input').value.toLowerCase().trim();
             const statusFilter = document.getElementById('filter-member-status').value;
@@ -1402,7 +1657,6 @@
             }
         }
 
-        // [إضافة 6]: دالة التجديد السريع للمشترك بضغطة واحدة
         window.quickRenewContract = function(code) {
             playAppSound('beep-click');
             const m = gymState.members.find(x => x.code == code);
@@ -1438,7 +1692,6 @@
             filterMembersTable();
         }
 
-        // [إضافة 4]: دالة تمكين طباعة أي قسم محدد فقط
         window.printFilteredMembers = function(statusType) {
             playAppSound('beep-click');
             document.getElementById('filter-member-status').value = statusType;
@@ -1499,7 +1752,6 @@
             document.getElementById('qr-card-modal').classList.add('active');
         }
 
-        // --- وظيفة إرسال دعوة جروب الواتساب المباشرة ---
         window.sendGroupInviteViaWhatsApp = function(memberCode) {
             playAppSound('beep-click');
             const code = memberCode || document.getElementById('current-qr-member-code').value;
@@ -1536,7 +1788,6 @@
             const qrDailyUrl = `https://quickchart.io/qr?text=${m.code}&size=250&dark=0f172a`;
             const qrActivationUrl = `https://quickchart.io/qr?text=PG-${m.code}&size=250&dark=ff3333`;
 
-            // تم إضافة رابط الجروب للرسالة الترحيبية أيضاً
             const message = `أهلاً بك كابتن [ ${m.name} ] في صالة Power Gym ⚡\n\nتم تسجيل اشتراكك واصدار كروتك بنجاح 🥳\nنوع الباقة: ${m.plan}\nالكود الخاص بك: ${m.code}\nتاريخ النهاية: ${m.endDate}\n\n1️⃣ للدخول اليومي للصالة، استخدمي باركود الحضور من هنا:\n${qrDailyUrl}\n\n2️⃣ كود تفعيل الاشتراك الخاص بك للإدارة:\n${qrActivationUrl}\n\n📌 للانضمام لجروب الواتساب الخاص بالمشتركات:\nhttps://chat.whatsapp.com/H6DYCDxDGaxEPlrm8gkJ2d\n\nنتمنى لكِ تمريناً ممتعاً! 💪`;
 
             const encodedMessage = encodeURIComponent(message);
@@ -1952,7 +2203,6 @@
             }
         }
 
-        // [إضافة 5]: دالة استعراض الأموال المتقدمة وتضمين إخفاء 0 جنيه
         function renderRecentTransactions() {
             const searchVal = document.getElementById('finance-search-input') ? document.getElementById('finance-search-input').value.toLowerCase().trim() : '';
             const excludeZero = document.getElementById('exclude-zero-finance') ? document.getElementById('exclude-zero-finance').checked : false;
@@ -1968,7 +2218,6 @@
             sortedTransactions.forEach((t, index) => {
                 const trueIndex = gymState.transactions.length - 1 - index;
                 
-                // منع ظهور السندات الصفرية إذا تم تفعيل الفلتر
                 if (excludeZero && parseFloat(t.amount || 0) === 0) {
                     return; 
                 }
@@ -2013,6 +2262,288 @@
                 dashboardTbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-muted); padding:15px;">لا توجد معاملات مدرجة حديثاً.</td></tr>`;
             }
         }
+
+        // ============================================================
+        //  وظائف سجل المدفوعات (إضافة - تصدير - استيراد - عرض)
+        // ============================================================
+        const PAY_MONTH_NAMES = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        let currentPayMonth = new Date().toISOString().slice(0, 7);
+
+        function loadPayAmounts(month) {
+            if (!gymState.payRecords) gymState.payRecords = {};
+            
+            // استرداد المبالغ السابقة إن وجدت في LocalStorage وتحويلها للسحابة
+            if (!gymState.payRecords[month]) {
+                try {
+                    const local = localStorage.getItem('gym_pay_' + month);
+                    if (local) {
+                        gymState.payRecords[month] = JSON.parse(local);
+                    } else {
+                        gymState.payRecords[month] = gymState.payMembers.map(m => month === '2026-06' ? m.price : 0);
+                    }
+                } catch(e) {
+                    gymState.payRecords[month] = gymState.payMembers.map(() => 0);
+                }
+                persistCoreState(false);
+            }
+            return gymState.payRecords[month];
+        }
+
+        function savePayAmounts(month, amounts) {
+            if (!gymState.payRecords) gymState.payRecords = {};
+            gymState.payRecords[month] = amounts;
+            persistCoreState(false); // هذا الأمر سيقوم بتحديث LocalStorage ورفع البيانات لـ Firebase
+        }
+
+        function statusBadgeForPay(endDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((new Date(endDate) - today) / 86400000);
+            if (diff < 0) return '<span class="pay-expired-badge">منتهي</span>';
+            if (diff <= 5) return '<span class="pay-expiring-badge">ينتهي ' + diff + ' أيام</span>';
+            return '<span class="pay-active-badge">نشط</span>';
+        }
+
+        function fmtDateForPay(d) {
+            if (!d) return '-';
+            const [, m, day] = d.split('-');
+            return day + ' ' + PAY_MONTH_NAMES[+m];
+        }
+
+        function buildPayTable() {
+            let payAmounts = loadPayAmounts(currentPayMonth);
+            const tbody = document.getElementById('payTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            gymState.payMembers.forEach((m, i) => {
+                const val = payAmounts[i] || 0;
+                const paid = val > 0;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const expired = new Date(m.end) < today;
+
+                const tr = document.createElement('tr');
+                if (expired) tr.className = 'pay-expired-row';
+
+                tr.innerHTML =
+                    '<td class="pay-row-num">' + (i + 1) + '</td>' +
+                    '<td class="pay-name-cell">' + m.name + '</td>' +
+                    '<td class="pay-date-cell">' + fmtDateForPay(m.sub) + '</td>' +
+                    '<td class="pay-date-cell">' + fmtDateForPay(m.end) + '</td>' +
+                    '<td>' + statusBadgeForPay(m.end) + '</td>' +
+                    '<td><div class="pay-amount-wrap">' +
+                    '<input type="number" class="pay-amount-input' + (paid ? ' paid' : '') + '" id="pay_inp_' + i + '" ' +
+                    'value="' + (val === 0 ? '' : val) + '" placeholder="' + m.price + '" min="0" step="0.01" ' +
+                    'oninput="onPayChange(' + i + ',this)" onfocus="this.select()">' +
+                    '<span class="pay-currency">ج.م</span></div></td>' +
+                    '<td class="no-print"><span class="pay-status-dot' + (paid ? ' paid' : '') + '" id="pay_dot_' + i + '"></span></td>';
+
+                tbody.appendChild(tr);
+            });
+
+            updatePayStats(payAmounts);
+            updatePayTitle();
+        }
+
+        window.onPayChange = function(i, input) {
+            let payAmounts = loadPayAmounts(currentPayMonth);
+            const val = parseFloat(input.value) || 0;
+            payAmounts[i] = val;
+            const paid = val > 0;
+            input.classList.toggle('paid', paid);
+            const dot = document.getElementById('pay_dot_' + i);
+            if (dot) dot.classList.toggle('paid', paid);
+            savePayAmounts(currentPayMonth, payAmounts);
+            updatePayStats(payAmounts);
+        }
+
+        function updatePayStats(payAmounts) {
+            let paid = 0, total = 0;
+            payAmounts.forEach(a => { if (a > 0) { paid++; total += a; } });
+            document.getElementById('payPaidCount').textContent = paid;
+            document.getElementById('payUnpaidCount').textContent = gymState.payMembers.length - paid;
+            document.getElementById('payTotalAmount').textContent = total.toFixed(2);
+            document.getElementById('payFootTotal').textContent = total.toFixed(2) + ' جنيه';
+        }
+
+        function updatePayTitle() {
+            const [yr, mo] = currentPayMonth.split('-');
+            const monthName = PAY_MONTH_NAMES[+mo] + ' ' + yr;
+            document.getElementById('payTableTitle').textContent = '📋 كشف اسماء المشتركات عن شهر ' + monthName;
+        }
+
+        window.resetAllPay = function() {
+            if (!confirm('هل تريد مسح كل المبالغ لهذا الشهر؟')) return;
+            let payAmounts = gymState.payMembers.map(() => 0);
+            savePayAmounts(currentPayMonth, payAmounts);
+            buildPayTable();
+            showPayToast('🔄 تم مسح كل المبالغ');
+        }
+
+        function showPayToast(msg) {
+            const t = document.getElementById('pay-toast');
+            if(t) {
+                t.textContent = msg;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2500);
+            }
+        }
+
+        // -- دوال إضافة مشتركة لسجل المدفوعات --
+        window.openPayMemberModal = function() {
+            playAppSound('beep-click');
+            document.getElementById('pay-m-name').value = '';
+            document.getElementById('pay-m-sub').value = new Date().toISOString().split('T')[0];
+            document.getElementById('pay-m-end').value = '';
+            document.getElementById('pay-m-price').value = '200';
+            document.getElementById('pay-member-modal').classList.add('active');
+        }
+
+        window.autoFillPayExpiry = function() {
+            const sub = document.getElementById('pay-m-sub').value;
+            if(sub) {
+                let d = new Date(sub);
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pay-m-end').value = d.toISOString().split('T')[0];
+            }
+        }
+
+        window.savePayMemberData = function() {
+            const name = document.getElementById('pay-m-name').value.trim();
+            const sub = document.getElementById('pay-m-sub').value;
+            const end = document.getElementById('pay-m-end').value;
+            const price = parseFloat(document.getElementById('pay-m-price').value);
+
+            if (!name || !sub || !end || isNaN(price)) {
+                playAppSound('beep-error');
+                triggerScreenFlash('error');
+                alert('الرجاء تعبئة جميع الحقول بشكل صحيح!');
+                return;
+            }
+
+            // إضافة المشتركة إلى المصفوفة الأساسية
+            gymState.payMembers.push({ name, sub, end, price });
+            
+            // إضافة صفر كدفع افتراضي للشهر الحالي للحفاظ على التزامن
+            if(!gymState.payRecords[currentPayMonth]) gymState.payRecords[currentPayMonth] = [];
+            gymState.payRecords[currentPayMonth].push(0);
+
+            // إضافة المشتركة تلقائياً إلى السجل الرئيسي أيضاً 
+            gymState.members.push({
+                code: gymState.config.nextCode++,
+                name: name,
+                phone: "01000000000",
+                plan: "اشتراك شهري عادي",
+                price: price,
+                discount: "0",
+                startDate: sub,
+                endDate: end,
+                healthStatus: "بصحة جيدة",
+                healthNotes: ""
+            });
+
+            persistCoreState(false);
+            closeModal('pay-member-modal');
+            buildPayTable();
+            refreshSystemCore(); // تحديث الداشبورد واللوحة الرئيسية
+            showPayToast('تم إضافة المشتركة بنجاح!');
+            playAppSound('beep-success');
+        }
+
+        // -- دوال تصدير واستيراد CSV لسجل المدفوعات --
+        window.exportPayCSV = function() {
+            playAppSound('beep-click');
+            const BOM = "\uFEFF"; // دعم اللغة العربية في Excel
+            let csv = BOM + "الرقم,اسم المشتركة,تاريخ الاشتراك,تاريخ الانتهاء,المبلغ المطلوب,المبلغ المدفوع (الشهر الحالي)\n";
+            let payAmounts = loadPayAmounts(currentPayMonth);
+            
+            gymState.payMembers.forEach((m, i) => {
+                const paid = payAmounts[i] || 0;
+                csv += `${i+1},${m.name},${m.sub},${m.end},${m.price},${paid}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `سجل_المدفوعات_${currentPayMonth}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        window.importPayCSV = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                let added = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const parts = line.split(',');
+                    if (parts.length >= 5) {
+                        const name = parts[1] ? parts[1].trim() : '';
+                        const sub = parts[2] ? parts[2].trim() : '';
+                        const end = parts[3] ? parts[3].trim() : '';
+                        const price = parseFloat(parts[4]) || 0;
+                        const paid = parseFloat(parts[5]) || 0;
+
+                        if (name && sub && end) {
+                            gymState.payMembers.push({ name, sub, end, price });
+                            if(!gymState.payRecords[currentPayMonth]) gymState.payRecords[currentPayMonth] = [];
+                            gymState.payRecords[currentPayMonth].push(paid);
+                            
+                            // المزامنة مع النظام الرئيسي
+                            gymState.members.push({
+                                code: gymState.config.nextCode++,
+                                name: name,
+                                phone: "01000000000",
+                                plan: "اشتراك شهري عادي",
+                                price: price,
+                                discount: "0",
+                                startDate: sub,
+                                endDate: end,
+                                healthStatus: "بصحة جيدة",
+                                healthNotes: ""
+                            });
+                            
+                            added++;
+                        }
+                    }
+                }
+
+                if (added > 0) {
+                    persistCoreState(false);
+                    buildPayTable();
+                    refreshSystemCore(); // تحديث الداشبورد واللوحة الرئيسية
+                    playAppSound('beep-success');
+                    showPayToast(`تم استيراد ${added} مشتركة بنجاح!`);
+                } else {
+                    playAppSound('beep-error');
+                    alert('لم يتم العثور على بيانات صحيحة للاستيراد. تأكد من تطابق أعمدة الملف مع ملف التصدير.');
+                }
+                
+                event.target.value = ''; // تصفير حقل الملف ليتمكن من استيراد نفس الملف مرة أخرى إذا أراد
+            };
+            reader.readAsText(file, 'UTF-8');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const picker = document.getElementById('payMonthPicker');
+            if(picker) {
+                picker.value = currentPayMonth;
+                picker.addEventListener('change', function() {
+                    currentPayMonth = this.value;
+                    buildPayTable();
+                });
+            }
+        });
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
