@@ -812,6 +812,7 @@
                     </div>
                 </div>
             </section>
+
         </main>
     </div>
 
@@ -886,7 +887,7 @@
                             <option value="بصحة جيدة">بصحة جيدة</option>
                             <option value="تعاني من أمراض قلب">تعاني من أمراض قلب</option>
                             <option value="تعاني من أمراض العمود الفقري">تعاني من أمراض العمود الفقري</option>
-                            <option value="تعاني من أمراض الأعصاب">تعاني من أمراض المناعة</option>
+                            <option value="تعاني من أمراض الأعصاب">تعاني من أمراض الأعصاب</option>
                             <option value="تعاني من أمراض المناعة">تعاني من أمراض المناعة</option>
                             <option value="تعاني من أمراض العظام">تعاني من أمراض العظام</option>
                             <option value="تعاني من أمراض الصدر">تعاني من أمراض الصدر</option>
@@ -1000,6 +1001,7 @@
         </div>
     </div>
 
+        <!-- Modal إضافة/تعديل مشتركة في كشف المدفوعات -->
     <div class="modal-overlay" id="pay-member-modal">
         <div class="modal-box" style="max-width: 520px;">
             <div class="modal-header">
@@ -1035,7 +1037,7 @@
         </div>
     </div>
 
-    <div id="batch-print-container" style="display:none;"></div>
+<div id="batch-print-container" style="display:none;"></div>
 
     <audio id="beep-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
     <audio id="beep-daily" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
@@ -1560,6 +1562,7 @@
                         countdownText = `<span style="color:#d97706; font-weight:700; font-size:12px;">❌ منقطعة منذ ${Math.abs(diffDays)} يوم</span>`;
                     }
 
+                    // ميزة التجديد السريع بنقرة زر 
                     let quickRenewBtn = "";
                     if (computedStatus !== 'active') {
                         quickRenewBtn = `<button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="quickRenewContract(${m.code})" title="تجديد سريع لشهر إضافي">🔄 تجديد سريع</button>`;
@@ -2553,7 +2556,7 @@
                 });
             }
         });
-        if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                 .then(registration => {
