@@ -889,8 +889,7 @@
                             <option value="تعاني من أمراض العمود الفقري">تعاني من أمراض العمود الفقري</option>
                             <option value="تعاني من أمراض الأعصاب">تعاني من أمراض الأعصاب</option>
                             <option value="تعاني من أمراض المناعة">تعاني من أمراض المناعة</option>
-                            <option value="تعاني من أمراض العظام">تعاني من أمراض العظام</option>
-                            <option value="تعاني من أمراض الصدر">تعاني من أمراض الصدر</option>
+                            <option value="تعاني من أمراض العظام">تعاني من أمراض الصدر</option>
                             <option value="تعاني من أمراض الكبد">تعاني من أمراض الكبد</option>
                             <option value="تعاني من مرض السكر">تعاني من مرض السكر</option>
                             <option value="تعاني من مرض الضغط">تعاني من مرض الضغط</option>
@@ -1001,8 +1000,7 @@
         </div>
     </div>
 
-        <!-- Modal إضافة/تعديل مشتركة في كشف المدفوعات -->
-    <div class="modal-overlay" id="pay-member-modal">
+        <div class="modal-overlay" id="pay-member-modal">
         <div class="modal-box" style="max-width: 520px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="pay-member-modal-title">➕ إضافة مشتركة جديدة للكشف</h3>
@@ -1050,10 +1048,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCXuhGxplYzRo8eNY9XRpvv6stBSvOyV-g",
             authDomain: "powergym-sporting.firebaseapp.com",
+            databaseURL: "https://powergym-sporting-default-rtdb.firebaseio.com",
             projectId: "powergym-sporting",
             storageBucket: "powergym-sporting.firebasestorage.app",
             messagingSenderId: "744027367730",
@@ -1062,6 +1062,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const gymDocRef = doc(db, "SystemData", "MainState");
@@ -1155,11 +1156,14 @@
     </script>
 
     <script>
+        // دمج السجلات في الكائن الأساسي لضمان الرفع السحابي
         var gymState = {
             config: { nextCode: 1001, theme: 'light' },
             members: [],
             attendance: [],
-            transactions: []
+            transactions: [],
+            payMembers: null,
+            payAmountsMap: {}
         };
 
         let html5QrScannerInstance = null;
@@ -1215,6 +1219,8 @@
                     if(!gymState.members) gymState.members = [];
                     if(!gymState.attendance) gymState.attendance = [];
                     if(!gymState.transactions) gymState.transactions = [];
+                    if(!gymState.payMembers) gymState.payMembers = null;
+                    if(!gymState.payAmountsMap) gymState.payAmountsMap = {};
                     if(!gymState.config) gymState.config = { nextCode: 1001, theme: 'light' };
                 } catch (e) {
                     console.error("خطأ في تهيئة البيانات المحلية من الكارت", e);
@@ -1225,7 +1231,6 @@
             document.getElementById('filter-attendance-date').value = new Date().toISOString().split('T')[0];
 
             refreshSystemCore(true);
-            buildPayTable(); // تشغيل دالة جدول المدفوعات عند التحميل
             
             document.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
@@ -1285,6 +1290,11 @@
             renderRecentTransactions();
             filterMembersTable();
             filterAttendanceData();
+            
+            if (typeof window.loadPayMembersList === 'function' && typeof window.buildPayTable === 'function') {
+                window.loadPayMembersList();
+                window.buildPayTable();
+            }
         }
 
         function toggleVisualTheme() {
@@ -2213,11 +2223,8 @@
         //  أكواد نظام سجل المدفوعات المدمج بالكامل هنا
         // ============================================================
 
-        // --- نظام إدارة قائمة المشتركات في المدفوعات ---
-        // يتم تخزين القائمة في localStorage للحفاظ عليها بين الجلسات
         const PAY_MEMBERS_STORAGE_KEY = 'powergym_pay_members_list';
 
-        // القائمة الافتراضية الأولية (الـ 50 مشتركة الحاليات)
         const PAY_MEMBERS_DEFAULT = [
             { name: "ايمان شوقي", sub: "2026-06-22", end: "2026-07-21", price: 200 },
             { name: "ناريمان عبد المنعم", sub: "2026-06-18", end: "2026-07-17", price: 200 },
@@ -2271,33 +2278,37 @@
             { name: "ايه خلف هريدي", sub: "2026-06-23", end: "2026-07-22", price: 200 }
         ];
 
-        // تحميل قائمة المشتركات من التخزين المحلي أو استخدام الافتراضية
         let PAY_MEMBERS = [];
 
         function loadPayMembersList() {
-            try {
-                const saved = localStorage.getItem(PAY_MEMBERS_STORAGE_KEY);
-                if (saved) {
-                    PAY_MEMBERS = JSON.parse(saved);
-                } else {
+            if (gymState.payMembers && gymState.payMembers.length > 0) {
+                PAY_MEMBERS = gymState.payMembers;
+            } else {
+                try {
+                    const saved = localStorage.getItem(PAY_MEMBERS_STORAGE_KEY);
+                    if (saved) {
+                        PAY_MEMBERS = JSON.parse(saved);
+                    } else {
+                        PAY_MEMBERS = JSON.parse(JSON.stringify(PAY_MEMBERS_DEFAULT));
+                        savePayMembersList();
+                    }
+                } catch (_) {
                     PAY_MEMBERS = JSON.parse(JSON.stringify(PAY_MEMBERS_DEFAULT));
-                    savePayMembersList();
                 }
-            } catch (_) {
-                PAY_MEMBERS = JSON.parse(JSON.stringify(PAY_MEMBERS_DEFAULT));
             }
         }
 
         function savePayMembersList() {
+            gymState.payMembers = PAY_MEMBERS;
             try {
                 localStorage.setItem(PAY_MEMBERS_STORAGE_KEY, JSON.stringify(PAY_MEMBERS));
             } catch (_) {}
+            persistCoreState(); // تشغيل الرفع السحابي التلقائي
         }
 
-        // --- دوال إدارة المشتركات (إضافة - تعديل - حذف) ---
-        let payEditIndex = -1; // -1 = وضع إضافة جديدة، >=0 = وضع تعديل
+        let payEditIndex = -1; 
 
-        function openPayMemberModal(editIndex) {
+        window.openPayMemberModal = function(editIndex) {
             editIndex = (typeof editIndex === 'undefined') ? -1 : editIndex;
             playAppSound('beep-click');
             payEditIndex = editIndex;
@@ -2329,13 +2340,13 @@
             setTimeout(function() { nameInput.focus(); }, 100);
         }
 
-        function closePayMemberModal() {
+        window.closePayMemberModal = function() {
             playAppSound('beep-click');
             document.getElementById('pay-member-modal').classList.remove('active');
             payEditIndex = -1;
         }
 
-        function savePayMemberData() {
+        window.savePayMemberData = function() {
             var name = document.getElementById('pay-m-name').value.trim();
             var sub = document.getElementById('pay-m-sub').value;
             var end = document.getElementById('pay-m-end').value;
@@ -2367,7 +2378,7 @@
             buildPayTable();
         }
 
-        function deletePayMember(index) {
+        window.deletePayMember = function(index) {
             if (index < 0 || index >= PAY_MEMBERS.length) return;
             var m = PAY_MEMBERS[index];
 
@@ -2380,6 +2391,15 @@
             if (index < payAmounts.length) {
                 payAmounts.splice(index, 1);
                 savePayAmounts(currentPayMonth, payAmounts);
+            }
+
+            // حذف الفهرس من التخزين السحابي
+            if (gymState.payAmountsMap) {
+                for (let k in gymState.payAmountsMap) {
+                    if (Array.isArray(gymState.payAmountsMap[k]) && gymState.payAmountsMap[k].length > index) {
+                        gymState.payAmountsMap[k].splice(index, 1);
+                    }
+                }
             }
 
             var allKeys = Object.keys(localStorage).filter(function(k) { return k.startsWith('gym_pay_'); });
@@ -2400,12 +2420,14 @@
             buildPayTable();
         }
 
-        function resetPayMembersToDefault() {
+        window.resetPayMembersToDefault = function() {
             if (!confirm('⚠️ تحذير شديد!\n\nهل أنت متأكد من إعادة تعيين قائمة المشتركات للقائمة الافتراضية الأصلية؟\n\nسيتم:\n• حذف جميع المشتركات المضافة حديثاً\n• إعادة المشتركات المحذوفة\n• مسح جميع المبالغ المدفوعة لجميع الأشهر\n\nلا يمكن التراجع عن هذا الإجراء!')) {
                 return;
             }
 
             PAY_MEMBERS = JSON.parse(JSON.stringify(PAY_MEMBERS_DEFAULT));
+            gymState.payMembers = PAY_MEMBERS;
+            gymState.payAmountsMap = {};
             savePayMembersList();
 
             var allKeys = Object.keys(localStorage).filter(function(k) { return k.startsWith('gym_pay_'); });
@@ -2420,7 +2442,6 @@
             buildPayTable();
         }
 
-        // تحميل القائمة عند بدء التشغيل
         loadPayMembersList();
 
         const PAY_MONTH_NAMES = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
@@ -2428,6 +2449,9 @@
         function getPayKey(m) { return 'gym_pay_' + m; }
 
         function loadPayAmounts(month) {
+            if (gymState.payAmountsMap && gymState.payAmountsMap[month]) {
+                return gymState.payAmountsMap[month];
+            }
             try {
                 var raw = localStorage.getItem(getPayKey(month));
                 if (raw) {
@@ -2441,7 +2465,11 @@
         }
 
         function savePayAmounts(month, amounts) {
+            if (!gymState.payAmountsMap) gymState.payAmountsMap = {};
+            gymState.payAmountsMap[month] = amounts;
+            
             try { localStorage.setItem(getPayKey(month), JSON.stringify(amounts)); } catch (_) { }
+            persistCoreState(); 
         }
 
         var currentPayMonth = new Date().toISOString().slice(0, 7);
@@ -2462,7 +2490,7 @@
             return parts[2] + ' ' + PAY_MONTH_NAMES[parseInt(parts[1])];
         }
 
-        function buildPayTable() {
+        window.buildPayTable = function() {
             payAmounts = loadPayAmounts(currentPayMonth);
             var tbody = document.getElementById('payTableBody');
             if(!tbody) return;
@@ -2503,7 +2531,7 @@
             updatePayTitle();
         }
 
-        function onPayChange(i, input) {
+        window.onPayChange = function(i, input) {
             var val = parseFloat(input.value) || 0;
             payAmounts[i] = val;
             var paid = val > 0;
@@ -2529,7 +2557,7 @@
             document.getElementById('payTableTitle').textContent = '📋 كشف اسماء المشتركات عن شهر ' + monthName;
         }
 
-        function resetAllPay() {
+        window.resetAllPay = function() {
             if (!confirm('هل تريد مسح كل المبالغ لهذا الشهر؟')) return;
             payAmounts = PAY_MEMBERS.map(function() { return 0; });
             savePayAmounts(currentPayMonth, payAmounts);
@@ -2556,7 +2584,8 @@
                 });
             }
         });
-if ('serviceWorker' in navigator) {
+        
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                 .then(registration => {
